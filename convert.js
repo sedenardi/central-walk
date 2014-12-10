@@ -72,7 +72,7 @@ var downloadAndProcess = function(index) {
     success: function(response) {
       processXml(index,response);
     }
-  });  
+  });
 };
 
 var finish = function() {

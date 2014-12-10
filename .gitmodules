@@ -1,0 +1,3 @@
+[submodule "togeojson"]
+	path = togeojson
+	url = https://github.com/sedenardi/togeojson.git
