@@ -49,13 +49,7 @@ var geoJson = [];
 
 var processXml = function(index,xml) {
   var json = toGeoJSON.gpx(xml);
-
-  var m = moment(json.features[0].properties.time);
-  console.log(m);
-
   geoJson.push(json);
-
-
   if (++index < files.length) {
     downloadAndProcess(index);
   } else {
@@ -75,7 +69,36 @@ var downloadAndProcess = function(index) {
   });
 };
 
+var hours = { };
+
+var processJson = function() {
+  for (var i = 0; i < geoJson.length; i++) {
+
+    // time zone offset (EST DST -4 hours)
+    var m = moment(geoJson[i].features[0].properties.time);
+    m.add(4,'hours');
+    m.utc();
+    geoJson[i].features[0].properties.time = m.toISOString();
+
+    for (var j = 0; j < geoJson[i].features[0].properties.coordTimes.length; j++) {
+      var n = moment(geoJson[i].features[0].properties.coordTimes[j]);
+      n.add(4,'hours');
+      n.utc();
+      geoJson[i].features[0].properties.coordTimes[j] = n.toISOString();
+    }
+    
+    if (typeof hours[m.hour()] === 'undefined') {
+      hours[m.hour()] = {
+        count: 1
+      };
+    } else {
+      hours[m.hour()].count++;
+    }
+  }
+};
+
 var finish = function() {
+  processJson();
   $('#container').html(JSON.stringify(geoJson,null,2));
 };
 
