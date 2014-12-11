@@ -45,7 +45,10 @@ var files = [
   '2014-08-11-1826.gpx'
 ];
 
-var geoJson = [];
+var geoJson = {
+  lineStrings: [],
+  maxTick: 0
+};
 var walks = {
   northStart: [],
   southStart: []
@@ -53,7 +56,7 @@ var walks = {
 
 var processXml = function(index,xml) {
   var json = toGeoJSON.gpx(xml);
-  geoJson.push(json);
+  geoJson.lineStrings.push(json);
   if (++index < files.length) {
     downloadAndProcess(index);
   } else {
@@ -73,59 +76,103 @@ var downloadAndProcess = function(index) {
   });
 };
 
-
-var processJson = function() {
-  var averageLats = [];
-
-  for (var i = 0; i < geoJson.length; i++) {
+var convertToUTC = function() {
+  for (var i = 0; i < geoJson.lineStrings.length; i++) {
     // time zone offset (EST DST -4 hours)
-    var m = moment(geoJson[i].features[0].properties.time);
+    var m = moment(geoJson.lineStrings[i].features[0].properties.time);
     m.add(4,'hours');
     m.utc();
-    geoJson[i].features[0].properties.time = m.toISOString();
+    geoJson.lineStrings[i].features[0].properties.time = m.toISOString();
 
-    // probably not necessary since we have ticks
-    for (var j = 0; j < geoJson[i].features[0].properties.coordTimes.length; j++) {
-      var n = moment(geoJson[i].features[0].properties.coordTimes[j]);
+    for (var j = 0; j < geoJson.lineStrings[i].features[0].properties.coordTimes.length; j++) {
+      var n = moment(geoJson.lineStrings[i].features[0].properties.coordTimes[j]);
       n.add(4,'hours');
       n.utc();
-      geoJson[i].features[0].properties.coordTimes[j] = n.toISOString();
+      geoJson.lineStrings[i].features[0].properties.coordTimes[j] = n.toISOString();
     }
+  }
+};
 
+var calculateTicks = function() {
+  for (var i = 0; i < geoJson.lineStrings.length; i++) {
     // calculate difference ticks (seconds) of coord times
     var ticks = [];
-    var baseTime = moment(geoJson[i].features[0].properties.coordTimes[0]);
-    for (var t = 0; t < geoJson[i].features[0].properties.coordTimes.length; t++) {
-      var time = moment(geoJson[i].features[0].properties.coordTimes[t]);
-      ticks.push(time.diff(baseTime,'s'));
+    var baseTime = moment(geoJson.lineStrings[i].features[0].properties.coordTimes[0]);
+    for (var j = 0; j < geoJson.lineStrings[i].features[0].properties.coordTimes.length; j++) {
+      var time = moment(geoJson.lineStrings[i].features[0].properties.coordTimes[j]);
+      var tick = time.diff(baseTime,'s');
+      ticks.push(tick);
+      if (tick > geoJson.maxTick) geoJson.maxTick = tick;
     }
-    geoJson[i].features[0].properties.ticks = ticks;
+    geoJson.lineStrings[i].features[0].properties.ticks = ticks;
+  }
+};
 
+var groupByStart = function() {
+  var averageLats = [];
+  for (var i = 0; i < geoJson.lineStrings.length; i++) {
     // find start points
-    var numCoords = geoJson[i].features[0].geometry.coordinates.length;
-    var firstLat = geoJson[i].features[0].geometry.coordinates[0][1];
-    var lastLat = geoJson[i].features[0].geometry.coordinates[numCoords-1][1];
+    var numCoords = geoJson.lineStrings[i].features[0].geometry.coordinates.length;
+    var firstLat = geoJson.lineStrings[i].features[0].geometry.coordinates[0][1];
+    var lastLat = geoJson.lineStrings[i].features[0].geometry.coordinates[numCoords-1][1];
     averageLats.push((firstLat+lastLat)/2);
   }
 
   var latSum = 0.0;
-  for (var k = 0; k < averageLats.length; k++) {
-    latSum += averageLats[k];
+  for (var j = 0; j < averageLats.length; j++) {
+    latSum += averageLats[j];
   }
   var averageLat = latSum / averageLats.length;
 
-  for (var l = 0; l < geoJson.length; l++) {
-    var startLat = geoJson[l].features[0].geometry.coordinates[0][1];
+  for (var k = 0; k < geoJson.lineStrings.length; k++) {
+    var startLat = geoJson.lineStrings[k].features[0].geometry.coordinates[0][1];
     if (startLat < averageLat)
-      walks.southStart.push(geoJson[l]);
+      walks.southStart.push(geoJson.lineStrings[k]);
     else
-      walks.northStart.push(geoJson[l]);
+      walks.northStart.push(geoJson.lineStrings[k]);
   }
+};
+
+var processJson = function() {
+  convertToUTC();
+  calculateTicks();
+  groupByStart();
 };
 
 var finish = function() {
   processJson();
   $('#container').html(JSON.stringify(geoJson,null,2));
+};
+
+var toMultiLineString = function(lineArray) {
+  return {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        geometry: {
+          type: 'MultiLineString',
+          coordinates: lineArray
+        }
+      }
+    ]
+  };
+};
+
+var getPathsAtTick = function(tick) {
+  var lineArray = [];
+  for (var i = 0; i < geoJson.lineStrings.length; i++) {
+    var endIndex = 0;
+    for (var j = 0; j < geoJson.lineStrings[i].features[0].properties.ticks.length; j++) {
+      var theTick = geoJson.lineStrings[i].features[0].properties.ticks[j];
+      if (tick < theTick) {
+        endIndex = j;
+        break;
+      }
+    }
+    lineArray.push(geoJson.lineStrings[i].features[0].geometry.coordinates.slice(0,(endIndex)));
+  }
+  return toMultiLineString(lineArray);
 };
 
 downloadAndProcess(0);
