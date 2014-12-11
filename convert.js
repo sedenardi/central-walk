@@ -49,29 +49,25 @@ var geoJson = {
   lineStrings: [],
   maxTick: 0
 };
-var walks = {
-  northStart: [],
-  southStart: []
-};
 
-var processXml = function(index,xml) {
+var processXml = function(index,xml,cb) {
   var json = toGeoJSON.gpx(xml);
   geoJson.lineStrings.push(json);
   if (++index < files.length) {
-    downloadAndProcess(index);
+    downloadAndProcess(index,cb);
   } else {
-    finish();
+    processJson(cb);
   }
 };
 
-var downloadAndProcess = function(index) {
-  $('#container').prepend('Processing ' + files[index] + '\n');
+var downloadAndProcess = function(index,cb) {
+  console.log('Processing ' + files[index]);
   $.ajax({
     url: 'gpx/' + files[index],
     dataType: 'xml',
     contentType: "text/xml; charset=\"utf-8\"",
     success: function(response) {
-      processXml(index,response);
+      processXml(index,response,cb);
     }
   });
 };
@@ -126,53 +122,17 @@ var groupByStart = function() {
 
   for (var k = 0; k < geoJson.lineStrings.length; k++) {
     var startLat = geoJson.lineStrings[k].features[0].geometry.coordinates[0][1];
-    if (startLat < averageLat)
-      walks.southStart.push(geoJson.lineStrings[k]);
-    else
-      walks.northStart.push(geoJson.lineStrings[k]);
+    geoJson.lineStrings[k].features[0].properties.start = startLat < averageLat ? 'south' : 'north';
   }
 };
 
-var processJson = function() {
+var processJson = function(cb) {
   convertToUTC();
   calculateTicks();
   groupByStart();
+  cb();
 };
 
-var finish = function() {
-  processJson();
-  $('#container').html(JSON.stringify(geoJson,null,2));
+var initJson = function(cb) {
+  downloadAndProcess(0, cb);
 };
-
-var toMultiLineString = function(lineArray) {
-  return {
-    type: 'FeatureCollection',
-    features: [
-      {
-        type: 'Feature',
-        geometry: {
-          type: 'MultiLineString',
-          coordinates: lineArray
-        }
-      }
-    ]
-  };
-};
-
-var getPathsAtTick = function(tick) {
-  var lineArray = [];
-  for (var i = 0; i < geoJson.lineStrings.length; i++) {
-    var endIndex = 0;
-    for (var j = 0; j < geoJson.lineStrings[i].features[0].properties.ticks.length; j++) {
-      var theTick = geoJson.lineStrings[i].features[0].properties.ticks[j];
-      if (tick < theTick) {
-        endIndex = j;
-        break;
-      }
-    }
-    lineArray.push(geoJson.lineStrings[i].features[0].geometry.coordinates.slice(0,(endIndex)));
-  }
-  return toMultiLineString(lineArray);
-};
-
-downloadAndProcess(0);

@@ -11,5 +11,10 @@
     <pre id="container">
     </pre>
     <script src="convert.js"></script>
+    <script>
+initJson(function() {
+  $('#container').html(JSON.stringify(geoJson,null,2));
+});
+    </script>
   </body>
 </html>
