@@ -46,6 +46,10 @@ var files = [
 ];
 
 var geoJson = [];
+var walks = {
+  northStart: [],
+  southStart: []
+};
 
 var processXml = function(index,xml) {
   var json = toGeoJSON.gpx(xml);
@@ -69,31 +73,53 @@ var downloadAndProcess = function(index) {
   });
 };
 
-var hours = { };
 
 var processJson = function() {
-  for (var i = 0; i < geoJson.length; i++) {
+  var averageLats = [];
 
+  for (var i = 0; i < geoJson.length; i++) {
     // time zone offset (EST DST -4 hours)
     var m = moment(geoJson[i].features[0].properties.time);
     m.add(4,'hours');
     m.utc();
     geoJson[i].features[0].properties.time = m.toISOString();
 
+    // probably not necessary since we have ticks
     for (var j = 0; j < geoJson[i].features[0].properties.coordTimes.length; j++) {
       var n = moment(geoJson[i].features[0].properties.coordTimes[j]);
       n.add(4,'hours');
       n.utc();
       geoJson[i].features[0].properties.coordTimes[j] = n.toISOString();
     }
-    
-    if (typeof hours[m.hour()] === 'undefined') {
-      hours[m.hour()] = {
-        count: 1
-      };
-    } else {
-      hours[m.hour()].count++;
+
+    // calculate difference ticks (seconds) of coord times
+    var ticks = [];
+    var baseTime = moment(geoJson[i].features[0].properties.coordTimes[0]);
+    for (var t = 0; t < geoJson[i].features[0].properties.coordTimes.length; t++) {
+      var time = moment(geoJson[i].features[0].properties.coordTimes[t]);
+      ticks.push(time.diff(baseTime,'s'));
     }
+    geoJson[i].features[0].properties.ticks = ticks;
+
+    // find start points
+    var numCoords = geoJson[i].features[0].geometry.coordinates.length;
+    var firstLat = geoJson[i].features[0].geometry.coordinates[0][1];
+    var lastLat = geoJson[i].features[0].geometry.coordinates[numCoords-1][1];
+    averageLats.push((firstLat+lastLat)/2);
+  }
+
+  var latSum = 0.0;
+  for (var k = 0; k < averageLats.length; k++) {
+    latSum += averageLats[k];
+  }
+  var averageLat = latSum / averageLats.length;
+
+  for (var l = 0; l < geoJson.length; l++) {
+    var startLat = geoJson[l].features[0].geometry.coordinates[0][1];
+    if (startLat < averageLat)
+      walks.southStart.push(geoJson[l]);
+    else
+      walks.northStart.push(geoJson[l]);
   }
 };
 
