@@ -1,5 +1,6 @@
 var map, currentLayer;
 var startTime, endTime;
+var speed = 3;
 
 var initMap = function() {
 	var a = geoJson.lineStrings[0].features[0].geometry.coordinates;
@@ -18,7 +19,7 @@ var initMap = function() {
 		id: 'examples.map-20v6611k'
 	}).addTo(map);
 
-  startTime = (new Date()).toISOString();
+  startTime = new Date();
   mapTick(0);
 };
 
@@ -61,13 +62,13 @@ var mapTick = function(tick) {
   if (currentLayer) map.removeLayer(currentLayer);
   currentLayer = nextLayer;
   if (tick < geoJson.maxTick) {
-    tick++;
+    tick += speed;
     setTimeout(function() {
       mapTick(tick);
-    },20);
+    },10);
   } else {
-    endTime = (new Date()).toISOString();
-    console.log('done');
+    endTime = new Date();
+    console.log('done - ' + (endTime-startTime));
   }
 };
 
