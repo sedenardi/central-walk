@@ -150,6 +150,9 @@ var calculateStats = function() {
     // duration
     var maxTick = geoJson.lineStrings[i].features[0].properties.ticks[geoJson.lineStrings[i].features[0].properties.ticks.length-1];
     geoJson.lineStrings[i].features[0].properties.maxTick = maxTick;
+
+    // pace
+    geoJson.lineStrings[i].features[0].properties.pace = Math.floor(maxTick/miles);
   }
 };
 

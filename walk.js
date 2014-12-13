@@ -45,7 +45,8 @@ var getPathsAtTick = function(tick) {
             start: geoJson.lineStrings[i].features[0].properties.start,
             pathLength: geoJson.lineStrings[i].features[0].properties.pathLength,
             maxTick: geoJson.lineStrings[i].features[0].properties.maxTick,
-            distance: geoJson.lineStrings[i].features[0].properties.distance
+            distance: geoJson.lineStrings[i].features[0].properties.distance,
+            pace: geoJson.lineStrings[i].features[0].properties.pace
           },
           geometry: {
             type: 'LineString',
@@ -84,8 +85,13 @@ var mapTick = function(tick) {
           var minutes = Math.floor(feature.properties.maxTick/60);
           var seconds = feature.properties.maxTick % 60;
           var duration = minutes + ' minutes ' + seconds + ' seconds';
+          var pMin = Math.floor(feature.properties.pace/60);
+          var pSec = feature.properties.pace % 60;
+          var pace = pMin + ' minutes ' + (pSec !== 0 ? (pSec + ' seconds') : '');
+
           $('#duration').html(duration);
           $('#distance').html(feature.properties.distance + ' mi');
+          $('#pace').html(pace);
           $('#pathTooltip').css('left', e.originalEvent.x + 5);
           $('#pathTooltip').css('top', e.originalEvent.y - 25);
           $('#pathTooltip').show();
