@@ -1,3 +1,32 @@
+body {
+  position: relative;
+  font-family: 'Open Sans', sans-serif;
+}
+
 #map {
 	height: 100%;
+}
+
+.hoverTooltip {
+  position: absolute;
+  width: 200px;
+  height: auto;
+  padding: 5px 7px;
+  background-color: rgba(0,0,0,0.7);
+  color: #ddd;
+  border-color: #999;
+  border-style: solid;
+  border-width: 1px;
+  -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+.hoverTooltip.hidden {
+  display: none;
+}
+.hoverTooltip p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 16px;
 }

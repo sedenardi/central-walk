@@ -9,10 +9,18 @@
     <script src="geojson-js-utils/geojson-utils.js"></script>
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
     <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="walk.css" />
   </head>
   <body>
     <div id="map"></div>
+
+    <div id="pathTooltip" class="hoverTooltip hidden">
+      <p>Start Time: <span id="start"></span></p>
+      <p>Duration: <span id="duration"></span></p>
+      <p>Distance: <span id="distance"></span></p>
+    </div>
+
     <script src="convert.js"></script>
     <script src="walk.js"></script>
   </body>

@@ -42,7 +42,9 @@ var getPathsAtTick = function(tick) {
           properties: {
             name: geoJson.lineStrings[i].features[0].properties.name,
             time: geoJson.lineStrings[i].features[0].properties.time,
-            start: geoJson.lineStrings[i].features[0].properties.start
+            start: geoJson.lineStrings[i].features[0].properties.start,
+            pathLength: geoJson.lineStrings[i].features[0].properties.pathLength,
+            maxTick: geoJson.lineStrings[i].features[0].properties.ticks[geoJson.lineStrings[i].features[0].properties.ticks.length-1]
           },
           geometry: {
             type: 'LineString',
@@ -56,14 +58,42 @@ var getPathsAtTick = function(tick) {
   return paths;
 };
 
+var getStyle = function(feature) {
+  var color = feature.properties.start === 'south' ? 'rgb(255, 51, 0)' : 'rgb(0, 51, 255)';
+  return {
+    color: color,
+    opacity: 0.3
+  };
+};
+
 var mapTick = function(tick) {
   var lines = getPathsAtTick(tick);
   var nextLayer = L.geoJson(lines, {
-    style: function(feature) {
-      var color = feature.properties.start === 'south' ? 'rgb(255, 51, 0)' : 'rgb(0, 51, 255)';
-      return {
-        color: color
-      };
+    style: getStyle,
+    onEachFeature: function(feature,layer) {
+      layer.on({
+        mouseover: function(e) {
+          layer.setStyle({
+            opacity: 1
+          });
+          if (!L.Browser.ie && !L.Browser.opera) {
+            layer.bringToFront();
+          }
+          $('#start').html(moment(feature.properties.time).format('ddd MMM D h:mm A'));
+          var minutes = Math.floor(feature.properties.maxTick/60);
+          var seconds = feature.properties.maxTick % 60;
+          var duration = minutes + ' minutes ' + seconds + ' seconds';
+          $('#duration').html(duration);
+          $('#pathTooltip').css('left', e.originalEvent.x + 5);
+          $('#pathTooltip').css('top', e.originalEvent.y - 25);
+          $('#pathTooltip').show();
+
+        },
+        mouseout: function(e) {
+          layer.setStyle(getStyle(feature));
+          $('#pathTooltip').hide();
+        }
+      })
     }
   }).addTo(map);
   if (currentLayer) map.removeLayer(currentLayer);
