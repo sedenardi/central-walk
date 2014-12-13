@@ -58,7 +58,14 @@ var getPathsAtTick = function(tick) {
 
 var mapTick = function(tick) {
   var lines = getPathsAtTick(tick);
-  var nextLayer = L.geoJson(lines).addTo(map);
+  var nextLayer = L.geoJson(lines, {
+    style: function(feature) {
+      var color = feature.properties.start === 'south' ? 'rgb(255, 51, 0)' : 'rgb(0, 51, 255)';
+      return {
+        color: color
+      };
+    }
+  }).addTo(map);
   if (currentLayer) map.removeLayer(currentLayer);
   currentLayer = nextLayer;
   if (tick < geoJson.maxTick) {

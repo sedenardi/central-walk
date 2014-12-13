@@ -126,10 +126,36 @@ var groupByStart = function() {
   }
 };
 
+var calculateLengths = function() {
+  for (var i = 0; i < geoJson.lineStrings.length; i++) {
+    var len = 0;
+    var coords = geoJson.lineStrings[i].features[0].geometry.coordinates;
+    for (var j = 0; j < (coords.length-1); j++) {
+      len += gju.pointDistance({
+          type: 'Point', 
+          coordinates: coords[j]
+        },
+        {
+          type: 'Point', 
+          coordinates: coords[j+1]
+        }
+      );
+    }
+    geoJson.lineStrings[i].features[0].properties.pathLength = len;
+  }
+};
+
+var stylePaths = function() {
+  for (var i = 0; i < geoJson.lineStrings.length; i++) {
+    
+  }
+};
+
 var processJson = function(cb) {
   convertToUTC();
   calculateTicks();
   groupByStart();
+  calculateLengths();
   cb();
 };
 
