@@ -1,6 +1,28 @@
 var map, currentLayer;
-var startTime, endTime;
-var speed = 3;
+var interval = 10;
+var speeds = {
+  realTime: {
+    speed: 0.01,
+    duration: 1180
+  },
+  slow: {
+    speed: 0.5,
+    duration: 110
+  },
+  normal: {
+    speed: 1,
+    duration: 55
+  },
+  fast: {
+    speed: 3,
+    duration: 19
+  },
+  superSpeed: {
+    speed: 10,
+    duration: 6
+  }
+};
+var speed = speeds.normal.speed;
 
 var initMap = function() {
 	var a = geoJson.lineStrings[0].features[0].geometry.coordinates;
@@ -9,18 +31,18 @@ var initMap = function() {
 		lon = (first[0] + last[0])/2,
 		lat = (first[1] + last[1])/2;
 
-	map = L.map('map').setView([lat, lon], 16);
+	map = L.map('map').setView([lat, lon], 15);
 
 	L.tileLayer('https://{s}.tiles.mapbox.com/v3/sedenardi.kfmi8afc/{z}/{x}/{y}.png', {
-		maxZoom: 18,
+		maxZoom: 20,
 		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
 			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
 			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
 		id: 'examples.map-20v6611k'
 	}).addTo(map);
 
-  startTime = new Date();
-  mapTick(0);
+  initControls();
+  resetMap();
 };
 
 var getPathsAtTick = function(tick) {
@@ -68,8 +90,15 @@ var getStyle = function(feature) {
   };
 };
 
-var mapTick = function(tick) {
-  var lines = getPathsAtTick(tick);
+var currentTick = 0,
+    playing = false,
+    paused = false;
+var mapTick = function() {
+  if (paused) {
+    return;
+  }
+  playing = true;
+  var lines = getPathsAtTick(currentTick);
   var nextLayer = L.geoJson(lines, {
     style: getStyle,
     onEachFeature: function(feature,layer) {
@@ -111,15 +140,58 @@ var mapTick = function(tick) {
   }).addTo(map);
   if (currentLayer) map.removeLayer(currentLayer);
   currentLayer = nextLayer;
-  if (tick < geoJson.maxTick) {
-    tick += speed;
+  if (currentTick < geoJson.maxTick) {
+    currentTick += speed;
     setTimeout(function() {
-      mapTick(tick);
-    },10);
+      mapTick();
+    },interval);
   } else {
-    endTime = new Date();
-    console.log('done - ' + (endTime-startTime));
+    playing = false;
+    syncControlState();
   }
+};
+
+var resetMap = function() {
+  playing = false;
+  paused = false;
+  currentTick = geoJson.mapTick;
+  mapTick();
+  syncControlState();
+};
+
+var syncControlState = function() {
+  var $toggleIcon = $('.playbackControl[data-control="toggle"] > i');
+  if (playing) {
+    $toggleIcon.removeClass('fa-play').addClass('fa-pause');
+  } else {
+    $toggleIcon.removeClass('fa-pause').addClass('fa-play');
+  }
+};
+
+var initControls = function() {
+  $('.playbackControl').click(function() {
+    var control = $(this).attr('data-control');
+    if (control === 'toggle') {
+      $toggleIcon = $(this).children('i');
+      if (!paused) {
+        if (playing) {
+          paused = true;
+        } else {
+          currentTick = 0;
+          mapTick();
+        }
+      } else {
+        paused = false;
+        mapTick();
+      }
+      syncControlState();
+    } else if (control === 'stop') {
+      resetMap();
+    }
+  });
+  $('#speedControl').change(function() {
+    speed = speeds[$(this).val()].speed;
+  });
 };
 
 initJson(initMap);
