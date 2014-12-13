@@ -92,8 +92,13 @@ var mapTick = function(tick) {
           $('#duration').html(duration);
           $('#distance').html(feature.properties.distance + ' mi');
           $('#pace').html(pace);
-          $('#pathTooltip').css('left', e.originalEvent.x + 5);
-          $('#pathTooltip').css('top', e.originalEvent.y - 25);
+
+          var x = e.originalEvent.x + 5,
+              y = e.originalEvent.y - 30;
+          if (x + 235 > $(window).width()) x = x - 235;
+          if (y + 95 > $(window).height()) y = $(window).height() - 95;
+          $('#pathTooltip').css('left', x);
+          $('#pathTooltip').css('top', y);
           $('#pathTooltip').show();
 
         },
