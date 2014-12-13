@@ -126,7 +126,7 @@ var groupByStart = function() {
   }
 };
 
-var calculateLengths = function() {
+var calculateStats = function() {
   for (var i = 0; i < geoJson.lineStrings.length; i++) {
     var len = 0;
     var coords = geoJson.lineStrings[i].features[0].geometry.coordinates;
@@ -141,7 +141,15 @@ var calculateLengths = function() {
         }
       );
     }
-    geoJson.lineStrings[i].features[0].properties.pathLength = len;
+    geoJson.lineStrings[i].features[0].properties.pathLength = len; // in meters
+
+    // distance
+    var miles = geoJson.lineStrings[i].features[0].properties.pathLength * 0.000621371;
+    geoJson.lineStrings[i].features[0].properties.distance = miles.toFixed(2);
+
+    // duration
+    var maxTick = geoJson.lineStrings[i].features[0].properties.ticks[geoJson.lineStrings[i].features[0].properties.ticks.length-1];
+    geoJson.lineStrings[i].features[0].properties.maxTick = maxTick;
   }
 };
 
@@ -155,7 +163,7 @@ var processJson = function(cb) {
   convertToUTC();
   calculateTicks();
   groupByStart();
-  calculateLengths();
+  calculateStats();
   cb();
 };
 
