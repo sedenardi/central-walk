@@ -24,6 +24,56 @@ var speeds = {
 };
 var speed = speeds.normal.speed;
 
+var distanceScale,
+    durationScale,
+    paceScale;
+
+var colorings = {
+  direction: {
+    getStyle: function(feature) {
+      var color = feature.properties.start === 'south' ? 'rgb(255, 51, 0)' : 'rgb(0, 51, 255)';
+      return {
+        color: color,
+        opacity: 0.3
+      };
+    }
+  },
+  distance: {
+    getStyle: function(feature) {
+      var scale = distanceScale(feature.properties.distance);
+      var colorNum = scale - (scale % 100);
+      var color = palette.indigo[colorNum];
+      return {
+        color: color,
+        opacity: 0.3
+      };
+    }
+  },
+  duration: {
+    getStyle: function(feature) {
+      var scale = durationScale(feature.properties.maxTick);
+      var colorNum = scale - (scale % 100);
+      var color = palette.red[colorNum];
+      return {
+        color: color,
+        opacity: 0.3
+      };
+    }
+  },
+  pace: {
+    getStyle: function(feature) {
+      var scale = paceScale(feature.properties.pace);
+      var colorNum = scale - (scale % 100);
+      var color = palette.purple[colorNum];
+      return {
+        color: color,
+        opacity: 0.3
+      };
+    }
+  }
+};
+var coloring = colorings.direction;
+
 var initMap = function() {
 	var a = geoJson.lineStrings[0].features[0].geometry.coordinates;
 	var first = a[0],
@@ -40,6 +90,36 @@ var initMap = function() {
 			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
 		id: 'examples.map-20v6611k'
 	}).addTo(map);
+
+  distanceScale = d3.scale.linear()
+    .domain([
+      d3.min(geoJson.lineStrings, function(d) {
+        return d.features[0].properties.distance;
+    }),
+      d3.max(geoJson.lineStrings, function(d) {
+        return d.features[0].properties.distance;
+    })])
+    .rangeRound([100, 900]);
+
+  durationScale = d3.scale.linear()
+    .domain([
+      d3.min(geoJson.lineStrings, function(d) {
+        return d.features[0].properties.maxTick;
+    }),
+      d3.max(geoJson.lineStrings, function(d) {
+        return d.features[0].properties.maxTick;
+    })])
+    .rangeRound([100, 900]);
+
+  paceScale = d3.scale.linear()
+    .domain([
+      d3.min(geoJson.lineStrings, function(d) {
+        return d.features[0].properties.pace;
+    }),
+      d3.max(geoJson.lineStrings, function(d) {
+        return d.features[0].properties.pace;
+    })])
+    .rangeRound([100, 900]);
 
   initControls();
   resetMap();
@@ -82,25 +162,14 @@ var getPathsAtTick = function(tick) {
   return paths;
 };
 
-var getStyle = function(feature) {
-  var color = feature.properties.start === 'south' ? 'rgb(255, 51, 0)' : 'rgb(0, 51, 255)';
-  return {
-    color: color,
-    opacity: 0.3
-  };
-};
-
 var currentTick = 0,
     playing = false,
     paused = false;
 var mapTick = function() {
-  if (paused) {
-    return;
-  }
   playing = true;
   var lines = getPathsAtTick(currentTick);
   var nextLayer = L.geoJson(lines, {
-    style: getStyle,
+    style: coloring.getStyle,
     onEachFeature: function(feature,layer) {
       layer.on({
         mouseover: function(e) {
@@ -132,7 +201,7 @@ var mapTick = function() {
 
         },
         mouseout: function(e) {
-          layer.setStyle(getStyle(feature));
+          layer.setStyle(coloring.getStyle(feature));
           $('#pathTooltip').hide();
         }
       })
@@ -140,7 +209,10 @@ var mapTick = function() {
   }).addTo(map);
   if (currentLayer) map.removeLayer(currentLayer);
   currentLayer = nextLayer;
-  if (currentTick < geoJson.maxTick) {
+
+  if (paused) {
+    return;
+  } else if (currentTick < geoJson.maxTick) {
     currentTick += speed;
     setTimeout(function() {
       mapTick();
@@ -161,7 +233,7 @@ var resetMap = function() {
 
 var syncControlState = function() {
   var $toggleIcon = $('.playbackControl[data-control="toggle"] > i');
-  if (playing) {
+  if (playing && !paused) {
     $toggleIcon.removeClass('fa-play').addClass('fa-pause');
   } else {
     $toggleIcon.removeClass('fa-pause').addClass('fa-play');
@@ -190,9 +262,16 @@ var initControls = function() {
     }
     e.preventDefault();
   });
+
   $('#speedControl').change(function() {
     speed = speeds[$(this).val()].speed;
   });
+
+  $('#colorControl').change(function() {
+    coloring = colorings[$(this).val()];
+    if (!playing || paused)
+      mapTick();
+  })
 };
 
 initJson(initMap);

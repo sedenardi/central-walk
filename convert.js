@@ -145,7 +145,7 @@ var calculateStats = function() {
 
     // distance
     var miles = geoJson.lineStrings[i].features[0].properties.pathLength * 0.000621371;
-    geoJson.lineStrings[i].features[0].properties.distance = miles.toFixed(2);
+    geoJson.lineStrings[i].features[0].properties.distance = parseFloat(miles.toFixed(2));
 
     // duration
     var maxTick = geoJson.lineStrings[i].features[0].properties.ticks[geoJson.lineStrings[i].features[0].properties.ticks.length-1];
