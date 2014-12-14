@@ -26,12 +26,14 @@ var speed = speeds.normal.speed;
 
 var distanceScale,
     durationScale,
-    paceScale;
+    paceScale,
+    startScale,
+    endScale;
 
 var colorings = {
   direction: {
     getStyle: function(feature) {
-      var color = feature.properties.start === 'south' ? 'rgb(255, 51, 0)' : 'rgb(0, 51, 255)';
+      var color = feature.properties.start === 'north' ? 'rgb(255, 51, 0)' : 'rgb(0, 51, 255)';
       return {
         color: color,
         opacity: 0.3
@@ -70,6 +72,20 @@ var colorings = {
         opacity: 0.3
       };
     }
+  },
+  start: {
+    getStyle: function(feature) {
+      var scale = feature.properties.start === 'north' ?
+        startScale(feature.properties.startTick) :
+        endScale(feature.properties.startTick);
+      var colorNum = scale - (scale % 100);
+      var color = feature.properties.start === 'north' ?
+        palette.deepOrange[colorNum] : palette.blue[colorNum];
+      return {
+        color: color,
+        opacity: 0.5
+      };
+    }
   }
 };
 var coloring = colorings.direction;
@@ -91,36 +107,7 @@ var initMap = function() {
 		id: 'examples.map-20v6611k'
 	}).addTo(map);
 
-  distanceScale = d3.scale.linear()
-    .domain([
-      d3.min(geoJson.lineStrings, function(d) {
-        return d.features[0].properties.distance;
-    }),
-      d3.max(geoJson.lineStrings, function(d) {
-        return d.features[0].properties.distance;
-    })])
-    .rangeRound([100, 900]);
-
-  durationScale = d3.scale.linear()
-    .domain([
-      d3.min(geoJson.lineStrings, function(d) {
-        return d.features[0].properties.maxTick;
-    }),
-      d3.max(geoJson.lineStrings, function(d) {
-        return d.features[0].properties.maxTick;
-    })])
-    .rangeRound([100, 900]);
-
-  paceScale = d3.scale.linear()
-    .domain([
-      d3.min(geoJson.lineStrings, function(d) {
-        return d.features[0].properties.pace;
-    }),
-      d3.max(geoJson.lineStrings, function(d) {
-        return d.features[0].properties.pace;
-    })])
-    .rangeRound([100, 900]);
-
+  initScales();
   initControls();
   resetMap();
 };
@@ -148,7 +135,8 @@ var getPathsAtTick = function(tick) {
             pathLength: geoJson.lineStrings[i].features[0].properties.pathLength,
             maxTick: geoJson.lineStrings[i].features[0].properties.maxTick,
             distance: geoJson.lineStrings[i].features[0].properties.distance,
-            pace: geoJson.lineStrings[i].features[0].properties.pace
+            pace: geoJson.lineStrings[i].features[0].properties.pace,
+            startTick: geoJson.lineStrings[i].features[0].properties.startTick
           },
           geometry: {
             type: 'LineString',
@@ -162,12 +150,73 @@ var getPathsAtTick = function(tick) {
   return paths;
 };
 
+var initScales = function() {
+  distanceScale = d3.scale.linear()
+    .domain([
+      d3.min(geoJson.lineStrings, function(d) {
+        return d.features[0].properties.distance;
+    }),
+      d3.max(geoJson.lineStrings, function(d) {
+        return d.features[0].properties.distance;
+    })])
+    .rangeRound([300, 900]);
+
+  durationScale = d3.scale.linear()
+    .domain([
+      d3.min(geoJson.lineStrings, function(d) {
+        return d.features[0].properties.maxTick;
+    }),
+      d3.max(geoJson.lineStrings, function(d) {
+        return d.features[0].properties.maxTick;
+    })])
+    .rangeRound([300, 900]);
+
+  paceScale = d3.scale.linear()
+    .domain([
+      d3.min(geoJson.lineStrings, function(d) {
+        return d.features[0].properties.pace;
+    }),
+      d3.max(geoJson.lineStrings, function(d) {
+        return d.features[0].properties.pace;
+    })])
+    .rangeRound([300, 900]);
+
+  startScale = d3.scale.linear()
+    .domain([
+      d3.min(geoJson.lineStrings.filter(function(d){
+        return d.features[0].properties.start === 'north';
+      }), function(d) {
+        return d.features[0].properties.startTick;
+    }),
+      d3.max(geoJson.lineStrings.filter(function(d){
+        return d.features[0].properties.start === 'north';
+      }), function(d) {
+        return d.features[0].properties.startTick;
+    })])
+    .rangeRound([300, 900]);
+
+  endScale = d3.scale.linear()
+    .domain([
+      d3.min(geoJson.lineStrings.filter(function(d){
+        return d.features[0].properties.start === 'south';
+      }), function(d) {
+        return d.features[0].properties.startTick;
+    }),
+      d3.max(geoJson.lineStrings.filter(function(d){
+        return d.features[0].properties.start === 'south';
+      }), function(d) {
+        return d.features[0].properties.startTick;
+    })])
+    .rangeRound([300, 900]);
+};
+
 var currentTick = 0,
     playing = false,
     paused = false;
 var mapTick = function() {
   playing = true;
   var lines = getPathsAtTick(currentTick);
+
   var nextLayer = L.geoJson(lines, {
     style: coloring.getStyle,
     onEachFeature: function(feature,layer) {
@@ -207,6 +256,7 @@ var mapTick = function() {
       })
     }
   }).addTo(map);
+
   if (currentLayer) map.removeLayer(currentLayer);
   currentLayer = nextLayer;
 

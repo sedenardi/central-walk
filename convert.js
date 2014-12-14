@@ -74,10 +74,13 @@ var downloadAndProcess = function(index,cb) {
 
 var convertToUTC = function() {
   for (var i = 0; i < geoJson.lineStrings.length; i++) {
-    // time zone offset (EST DST -4 hours)
     var m = moment(geoJson.lineStrings[i].features[0].properties.time);
-    m.add(4,'hours');
-    m.utc();
+
+    var startTick = m.hours()*3600 + m.minutes()*60 + m.seconds();
+    geoJson.lineStrings[i].features[0].properties.startTick = startTick;
+    
+    // time zone offset (EST DST -4 hours)
+    m.add(4,'hours').utc();
     geoJson.lineStrings[i].features[0].properties.time = m.toISOString();
 
     for (var j = 0; j < geoJson.lineStrings[i].features[0].properties.coordTimes.length; j++) {
