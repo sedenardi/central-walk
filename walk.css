@@ -36,6 +36,11 @@ body {
   display: inline-block !important;
 }
 
+.navLabel {
+  padding-top: 15px;
+  display: inline-block;
+}
+
 .navbar .divider-vertical {
   height: 40px;
   margin: 5px 9px;

@@ -169,7 +169,7 @@ var syncControlState = function() {
 };
 
 var initControls = function() {
-  $('.playbackControl').click(function() {
+  $('.playbackControl').click(function(e) {
     var control = $(this).attr('data-control');
     if (control === 'toggle') {
       $toggleIcon = $(this).children('i');
@@ -188,6 +188,7 @@ var initControls = function() {
     } else if (control === 'stop') {
       resetMap();
     }
+    e.preventDefault();
   });
   $('#speedControl').change(function() {
     speed = speeds[$(this).val()].speed;
