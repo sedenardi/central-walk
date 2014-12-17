@@ -90,6 +90,7 @@ attractionsGeoJson = {
   type: 'FeatureCollection',
   features: [ ]
 };
+featureTypes = [];
 
 var parseXml = function(cb) {
   $.ajax({
@@ -165,6 +166,20 @@ var toGeoJson = function(cb) {
         features: ['gate']
       }
     });
+  }
+  getDistinctFeatureTypes(cb);
+};
+
+var getDistinctFeatureTypes = function(cb) {
+  for (var i = 0; i < attractionsGeoJson.features.length; i++) {
+    var types = attractionsGeoJson.features[i].properties.features;
+    for (var j = 0; j < types.length; j++) {
+      var exists = false;
+      for (var k = 0; k < featureTypes.length; k++) {
+        exists = exists || (featureTypes[k] === types[j]);
+      }
+      if (!exists) featureTypes.push(types[j]);
+    }
   }
   cb();
 };
