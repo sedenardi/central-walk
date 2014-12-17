@@ -90,6 +90,31 @@ var colorings = {
 };
 var coloring = colorings.direction;
 
+var tiles = {
+  Mapbox: {
+    url: 'https://{s}.tiles.mapbox.com/v3/sedenardi.kfmi8afc/{z}/{x}/{y}.png',
+    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+      '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+      'Imagery © <a href="http://mapbox.com">Mapbox</a>'
+  },
+  OpenStreetMap: {
+    url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+  },
+  OpenMapSurferRoads: {
+    url: 'http://openmapsurfer.uni-hd.de/tiles/roads/x={x}&y={y}&z={z}',
+    attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ ' +
+      'University of Heidelberg</a> &mdash; Map data &copy; ' +
+      '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  },
+  HyddaFull: {
+    url: 'http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png',
+    attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap ' +
+      'Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }
+};
+var tile = tiles.Mapbox;
+
 var initMap = function() {
 	var a = geoJson.lineStrings[0].features[0].geometry.coordinates;
 	var first = a[0],
@@ -97,15 +122,11 @@ var initMap = function() {
 		lon = (first[0] + last[0])/2,
 		lat = (first[1] + last[1])/2;
 
-	map = L.map('map').setView([lat, lon], 15);
-
-	L.tileLayer('https://{s}.tiles.mapbox.com/v3/sedenardi.kfmi8afc/{z}/{x}/{y}.png', {
-		maxZoom: 20,
-		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-		id: 'examples.map-20v6611k'
-	}).addTo(map);
+	map = L.map('map').setView([lat, lon], 16);
+  L.tileLayer(tile.url, {
+    maxZoom: 20,
+    attribution: tile.attribution
+  }).addTo(map);
 
   initScales();
   initControls();

@@ -99,7 +99,7 @@ var initMap = function() {
 
   var mapOptions = {
     center: { lat: lat, lng: lon},
-    zoom: 15
+    zoom: 16
   };
   map = new google.maps.Map(document.getElementById('map'),
     mapOptions);
