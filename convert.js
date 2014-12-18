@@ -47,7 +47,8 @@ var files = [
 
 var geoJson = {
   lineStrings: [],
-  maxTick: 0
+  maxTick: 0,
+  bounds: {}
 };
 
 var processXml = function(index,xml,cb) {
@@ -73,38 +74,38 @@ var downloadAndProcess = function(index,cb) {
 };
 
 var convertToUTC = function() {
-  for (var i = 0; i < geoJson.lineStrings.length; i++) {
-    var m = moment(geoJson.lineStrings[i].features[0].properties.time);
+  _.each(geoJson.lineStrings, function(v,i) {
+    var m = moment(v.features[0].properties.time);
 
     var startTick = m.hours()*3600 + m.minutes()*60 + m.seconds();
-    geoJson.lineStrings[i].features[0].properties.startTick = startTick;
+    v.features[0].properties.startTick = startTick;
     
     // time zone offset (EST DST -4 hours)
     m.add(4,'hours').utc();
-    geoJson.lineStrings[i].features[0].properties.time = m.toISOString();
+    v.features[0].properties.time = m.toISOString();
 
-    for (var j = 0; j < geoJson.lineStrings[i].features[0].properties.coordTimes.length; j++) {
-      var n = moment(geoJson.lineStrings[i].features[0].properties.coordTimes[j]);
+    _.each(v.features[0].properties.coordTimes, function(w,j) {
+      var n = moment(w);
       n.add(4,'hours');
       n.utc();
-      geoJson.lineStrings[i].features[0].properties.coordTimes[j] = n.toISOString();
-    }
-  }
+      v.features[0].properties.coordTimes[j] = n.toISOString();
+    });
+  });
 };
 
 var calculateTicks = function() {
-  for (var i = 0; i < geoJson.lineStrings.length; i++) {
-    // calculate difference ticks (seconds) of coord times
-    var ticks = [];
-    var baseTime = moment(geoJson.lineStrings[i].features[0].properties.coordTimes[0]);
-    for (var j = 0; j < geoJson.lineStrings[i].features[0].properties.coordTimes.length; j++) {
-      var time = moment(geoJson.lineStrings[i].features[0].properties.coordTimes[j]);
-      var tick = time.diff(baseTime,'s');
-      ticks.push(tick);
-      if (tick > geoJson.maxTick) geoJson.maxTick = tick;
-    }
-    geoJson.lineStrings[i].features[0].properties.ticks = ticks;
-  }
+  _.each(geoJson.lineStrings, function(v,i) {
+    var baseTime = moment(v.features[0].properties.coordTimes[0]);
+    v.features[0].properties.ticks = _.map(v.features[0].properties.coordTimes, function(w,j) {
+      var time = moment(w);
+      return time.diff(baseTime,'s');
+    });
+  });
+  var maxObj = _.max(geoJson.lineStrings, function(v,i) {
+    var len = v.features[0].properties.ticks.length;
+    return v.features[0].properties.ticks[len-1];
+  });
+  geoJson.maxTick = maxObj.features[0].properties.ticks[maxObj.features[0].properties.ticks.length-1];
 };
 
 var groupByStart = function() {
@@ -135,7 +136,7 @@ var calculateStats = function() {
     var coords = geoJson.lineStrings[i].features[0].geometry.coordinates;
     for (var j = 0; j < (coords.length-1); j++) {
       len += gju.pointDistance({
-          type: 'Point', 
+          type: 'Point',
           coordinates: coords[j]
         },
         {
@@ -159,9 +160,16 @@ var calculateStats = function() {
   }
 };
 
-var stylePaths = function() {
+var calculateBounds = function() {
+  var maxLon = geoJson.lineStrings[0].features[0].geometry.coordinates[0][0],
+      minLon = geoJson.lineStrings[0].features[0].geometry.coordinates[0][0],
+      maxLat = geoJson.lineStrings[0].features[0].geometry.coordinates[0][1],
+      minLat = geoJson.lineStrings[0].features[0].geometry.coordinates[0][1];
   for (var i = 0; i < geoJson.lineStrings.length; i++) {
-    
+    var coords = geoJson.lineStrings[0].features[0].geometry.coordinates;
+    for (var j = 0; j < coords.length; j++) {
+
+    }
   }
 };
 
