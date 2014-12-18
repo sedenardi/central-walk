@@ -47,8 +47,7 @@ var files = [
 
 var geoJson = {
   lineStrings: [],
-  maxTick: 0,
-  bounds: {}
+  maxTick: 0
 };
 
 var processXml = function(index,xml,cb) {
@@ -102,75 +101,74 @@ var calculateTicks = function() {
     });
   });
   var maxObj = _.max(geoJson.lineStrings, function(v,i) {
-    var len = v.features[0].properties.ticks.length;
-    return v.features[0].properties.ticks[len-1];
+    return _.last(v.features[0].properties.ticks);
   });
-  geoJson.maxTick = maxObj.features[0].properties.ticks[maxObj.features[0].properties.ticks.length-1];
+  geoJson.maxTick = _.last(maxObj.features[0].properties.ticks);
 };
 
 var groupByStart = function() {
-  var averageLats = [];
-  for (var i = 0; i < geoJson.lineStrings.length; i++) {
-    // find start points
-    var numCoords = geoJson.lineStrings[i].features[0].geometry.coordinates.length;
-    var firstLat = geoJson.lineStrings[i].features[0].geometry.coordinates[0][1];
-    var lastLat = geoJson.lineStrings[i].features[0].geometry.coordinates[numCoords-1][1];
-    averageLats.push((firstLat+lastLat)/2);
-  }
+  var averageLats = _.map(geoJson.lineStrings, function(v,i) {
+    return (_.first(v.features[0].geometry.coordinates)[1] +
+      _.last(v.features[0].geometry.coordinates)[1]) /2;
+  });
 
-  var latSum = 0.0;
-  for (var j = 0; j < averageLats.length; j++) {
-    latSum += averageLats[j];
-  }
-  var averageLat = latSum / averageLats.length;
+  var averageLat = _.reduce(averageLats, function(m,n) {
+    return m + n;
+  }) / averageLats.length;
 
-  for (var k = 0; k < geoJson.lineStrings.length; k++) {
-    var startLat = geoJson.lineStrings[k].features[0].geometry.coordinates[0][1];
-    geoJson.lineStrings[k].features[0].properties.start = startLat < averageLat ? 'south' : 'north';
-  }
+  _.each(geoJson.lineStrings, function(v,i) {
+    v.features[0].properties.start =
+      _.first(v.features[0].geometry.coordinates)[1] < averageLat ? 'south' : 'north';
+  });
 };
 
 var calculateStats = function() {
-  for (var i = 0; i < geoJson.lineStrings.length; i++) {
+  _.each(geoJson.lineStrings, function(v,i) {
     var len = 0;
-    var coords = geoJson.lineStrings[i].features[0].geometry.coordinates;
+    var coords = v.features[0].geometry.coordinates;
     for (var j = 0; j < (coords.length-1); j++) {
       len += gju.pointDistance({
           type: 'Point',
           coordinates: coords[j]
         },
         {
-          type: 'Point', 
+          type: 'Point',
           coordinates: coords[j+1]
         }
       );
     }
-    geoJson.lineStrings[i].features[0].properties.pathLength = len; // in meters
+    v.features[0].properties.pathLength = len; // in meters
 
     // distance
-    var miles = geoJson.lineStrings[i].features[0].properties.pathLength * 0.000621371;
-    geoJson.lineStrings[i].features[0].properties.distance = parseFloat(miles.toFixed(2));
+    var miles = v.features[0].properties.pathLength * 0.000621371;
+    v.features[0].properties.distance = parseFloat(miles.toFixed(2));
 
     // duration
-    var maxTick = geoJson.lineStrings[i].features[0].properties.ticks[geoJson.lineStrings[i].features[0].properties.ticks.length-1];
-    geoJson.lineStrings[i].features[0].properties.maxTick = maxTick;
+    var maxTick = v.features[0].properties.ticks[geoJson.lineStrings[i].features[0].properties.ticks.length-1];
+    v.features[0].properties.maxTick = maxTick;
 
     // pace
-    geoJson.lineStrings[i].features[0].properties.pace = Math.floor(maxTick/miles);
-  }
+    v.features[0].properties.pace = Math.floor(maxTick/miles);
+  });
 };
 
 var calculateBounds = function() {
-  var maxLon = geoJson.lineStrings[0].features[0].geometry.coordinates[0][0],
-      minLon = geoJson.lineStrings[0].features[0].geometry.coordinates[0][0],
-      maxLat = geoJson.lineStrings[0].features[0].geometry.coordinates[0][1],
-      minLat = geoJson.lineStrings[0].features[0].geometry.coordinates[0][1];
-  for (var i = 0; i < geoJson.lineStrings.length; i++) {
-    var coords = geoJson.lineStrings[0].features[0].geometry.coordinates;
-    for (var j = 0; j < coords.length; j++) {
-
-    }
-  }
+  var lons = _.reduce(geoJson.lineStrings, function(m,n) {
+    return m.concat(_.map(n.features[0].geometry.coordinates, function(w,j) {
+      return w[0];
+    }));
+  }, []);
+  var lats = _.reduce(geoJson.lineStrings, function(m,n) {
+    return m.concat(_.map(n.features[0].geometry.coordinates, function(w,j) {
+      return w[1];
+    }));
+  }, []);
+  geoJson.bounds = {
+    maxLon: _.max(lons),
+    minLon: _.min(lons),
+    maxLat: _.max(lats),
+    minLat: _.min(lats)
+  };
 };
 
 var processJson = function(cb) {
@@ -178,6 +176,7 @@ var processJson = function(cb) {
   calculateTicks();
   groupByStart();
   calculateStats();
+  calculateBounds();
   cb();
 };
 
