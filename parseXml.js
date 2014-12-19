@@ -92,18 +92,18 @@ attractionsGeoJson = {
 };
 featureTypes = [];
 
-var parseXml = function(cb) {
+var parseAttractionXml = function(cb) {
   $.ajax({
     url: 'map-list.xml',
     dataType: 'xml',
     contentType: "text/xml; charset=\"utf-8\"",
     success: function(response) {
-      processXml(response,cb);
+      processAttractionXml(response,cb);
     }
   });
 };
 
-var getCoords = function(node) {
+var getAttractionCoords = function(node) {
   var lon = parseFloat(node.getElementsByTagName('longitude')[0].firstChild.nodeValue);
   var lat = parseFloat(node.getElementsByTagName('latitude')[0].firstChild.nodeValue);
   lon = (lon > 1) ? (lon * -1) : lon;
@@ -111,12 +111,12 @@ var getCoords = function(node) {
   return [lon,lat];
 };
 
-var processXml = function(doc,cb) {
+var processAttractionXml = function(doc,cb) {
   var attractionNodes = doc.getElementsByTagName('attraction');
   var attractions = [];
   for (var i = 0; i < attractionNodes.length; i++) {
     var title = attractionNodes[i].getElementsByTagName('title')[0].firstChild.nodeValue;
-    var coords = getCoords(attractionNodes[i]);
+    var coords = getAttractionCoords(attractionNodes[i]);
     var description = attractionNodes[i].getElementsByTagName('description')[0].firstChild.nodeValue;
     var link = attractionNodes[i].getElementsByTagName('link')[0].firstChild.nodeValue;
     var featureNodes = attractionNodes[i].getElementsByTagName('feature');
@@ -134,10 +134,10 @@ var processXml = function(doc,cb) {
       });
     }
   }
-  toGeoJson(cb);
+  toAttractionGeoJson(cb);
 };
 
-var toGeoJson = function(cb) {
+var toAttractionGeoJson = function(cb) {
   for (var i = 0; i < attractionsObj.length; i++) {
     attractionsGeoJson.features.push({
       type: 'Feature',
@@ -181,5 +181,26 @@ var getDistinctFeatureTypes = function(cb) {
       if (!exists) featureTypes.push(types[j]);
     }
   }
+  if (getJson) {
+    restrictToBounds(cb);
+  } else {
+    cb();
+  }
+};
+
+var isInBounds = function(coord) {
+  return coord[0] <= geoJson.bounds.maxLon &&
+    coord[0] >= geoJson.bounds.minLon &&
+    coord[1] <= geoJson.bounds.maxLat &&
+    coord[1] >= geoJson.bounds.minLat;
+};
+
+var restrictToBounds = function(cb) {
+  var fArray = [];
+  for (var i = 0; i < attractionsGeoJson.features.length; i++) {
+    if (isInBounds(attractionsGeoJson.features[i].geometry.coordinates)
+      fArray.push(attractionsGeoJson.features[i]);
+  }
+  attractionsGeoJson.features = fArray;
   cb();
 };
