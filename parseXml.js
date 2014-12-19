@@ -181,7 +181,7 @@ var getDistinctFeatureTypes = function(cb) {
       if (!exists) featureTypes.push(types[j]);
     }
   }
-  if (getJson) {
+  if (typeof geoJson !== 'undefined') {
     restrictToBounds(cb);
   } else {
     cb();
@@ -198,7 +198,7 @@ var isInBounds = function(coord) {
 var restrictToBounds = function(cb) {
   var fArray = [];
   for (var i = 0; i < attractionsGeoJson.features.length; i++) {
-    if (isInBounds(attractionsGeoJson.features[i].geometry.coordinates)
+    if (isInBounds(attractionsGeoJson.features[i].geometry.coordinates))
       fArray.push(attractionsGeoJson.features[i]);
   }
   attractionsGeoJson.features = fArray;

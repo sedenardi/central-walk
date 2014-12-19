@@ -171,12 +171,19 @@ var calculateBounds = function() {
   };
 };
 
+var cleanupUnusedFields = function() {
+  _.each(geoJson.lineStrings, function(v,i) {
+    delete v.features[0].properties.coordTimes;
+  });
+};
+
 var processJson = function(cb) {
   convertToUTC();
   calculateTicks();
   groupByStart();
   calculateStats();
   calculateBounds();
+  cleanupUnusedFields();
   cb();
 };
 

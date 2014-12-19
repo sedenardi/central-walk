@@ -10,12 +10,12 @@
     <script src="geojson-js-utils/geojson-utils.js"></script>
   </head>
   <body>
-    <pre id="container">
-    </pre>
+    <div id="container">
+    </div>
     <script src="convert.js"></script>
     <script>
 initJson(function() {
-  $('#container').html(JSON.stringify(geoJson,null,2));
+  $('#container').html(JSON.stringify(geoJson));
 });
     </script>
   </body>
