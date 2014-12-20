@@ -6,19 +6,19 @@ var speeds = {
     duration: 1180
   },
   slow: {
-    speed: 0.5,
+    speed: 1,
     duration: 110
   },
   normal: {
-    speed: 1,
+    speed: 2,
     duration: 55
   },
   fast: {
-    speed: 3,
+    speed: 6,
     duration: 19
   },
   superSpeed: {
-    speed: 10,
+    speed: 15,
     duration: 6
   }
 };
@@ -355,6 +355,11 @@ var initControls = function() {
     } else if (attractionLayer) {
       map.removeLayer(attractionLayer);
     }
+  });
+
+  $('#attrToggle').click(function() {
+    $('#attCheckbox').prop('checked', !$('#attCheckbox').is(':checked'))
+      .change();
   });
 };
 
