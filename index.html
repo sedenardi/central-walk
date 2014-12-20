@@ -36,7 +36,7 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
             <li class="divider-vertical"></li>
-            <li>
+            <li class="navPad">
               <a class="playbackControl" href="#" data-control="stop"><i class="fa fa-stop"></i></a>
               <a class="playbackControl" href="#" data-control="toggle"><i class="fa fa-play"></i></a>
               <select id="speedControl">
@@ -48,7 +48,7 @@
               </select>
             </li>
             <li class="divider-vertical"></li>
-            <li>
+            <li class="navPad">
               <span class="navLabel">Color Shading: </span>
               <select id="colorControl">
                 <option value="direction" selected="true">Direction</option>
@@ -58,7 +58,11 @@
                 <option value="pace">Pace</option>
               </select>
             </li>
-            <!-- <li class="divider-vertical"></li> -->
+            <li class="divider-vertical"></li>
+            <li class="navPad">
+              <input id="attCheckbox" class="navCheckbox" type="checkbox" checked="checked">
+              <span class="navLabel">  Show Attractions</span>
+            </li>
           </ul>
           <!-- <ul class="nav navbar-nav navbar-right">
             <li><a href="#">Link</a></li>

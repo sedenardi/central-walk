@@ -1,4 +1,4 @@
-var map, currentLayer;
+var map, currentLayer, attractionLayer;
 var interval = 10;
 var speeds = {
   realTime: {
@@ -131,6 +131,7 @@ var initMap = function() {
   initScales();
   initControls();
   resetMap();
+  showAttractions();
 };
 
 var getPathsAtTick = function(tick) {
@@ -311,6 +312,10 @@ var syncControlState = function() {
   }
 };
 
+var showAttractions = function() {
+  attractionLayer = L.geoJson(attractions).addTo(map);
+};
+
 var initControls = function() {
   $('.playbackControl').click(function(e) {
     var control = $(this).attr('data-control');
@@ -342,16 +347,31 @@ var initControls = function() {
     coloring = colorings[$(this).val()];
     if (!playing || paused)
       mapTick();
-  })
+  });
+
+  $('#attCheckbox').change(function() {
+    if ($('#attCheckbox').is(':checked')) {
+      showAttractions();
+    } else if (attractionLayer) {
+      map.removeLayer(attractionLayer);
+    }
+  });
 };
 
 var initWalk = function(cb) {
   $.ajax({
     url: 'coordinates.json',
     dataType: 'json',
-    success: function(response) {
-      geoJson = response;
-      cb();
+    success: function(geoRes) {
+      geoJson = geoRes;
+      $.ajax({
+        url: 'attractions.json',
+        dataType: 'json',
+        success: function(attRes) {
+          attractions = attRes;
+          cb();
+        }
+      });
     }
   });
 };

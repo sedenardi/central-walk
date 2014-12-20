@@ -36,14 +36,22 @@ body {
   display: inline-block !important;
 }
 
+.navPad {
+  padding: 0 15px;
+}
+
 .navLabel {
   padding-top: 15px;
   display: inline-block;
 }
 
+.navCheckbox {
+  vertical-align: text-top;
+}
+
 .navbar .divider-vertical {
   height: 40px;
-  margin: 5px 9px;
+  margin: 5px 0;
   border-right: 1px solid #999;
   border-left: 1px solid #f2f2f2;
 }
