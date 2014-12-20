@@ -10,15 +10,12 @@
     <script src="geojson-js-utils/geojson-utils.js"></script>
   </head>
   <body>
-    <pre id="container">
-    </pre>
-    <script src="convert.js"></script>
-    <script src="parseXml.js"></script>
+    <div id="container">
+    </div>
+    <script src="convertCoordinates.js"></script>
     <script>
 initJson(function() {
-  parseAttractionXml(function() {
-    $('#container').html(JSON.stringify(attractionsGeoJson,null,2));
-  });
+  $('#container').html(JSON.stringify(geoJson));
 });
     </script>
   </body>

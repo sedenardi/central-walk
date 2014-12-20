@@ -345,4 +345,15 @@ var initControls = function() {
   })
 };
 
-initJson(initMap);
+var initWalk = function(cb) {
+  $.ajax({
+    url: 'coordinates.json',
+    dataType: 'json',
+    success: function(response) {
+      geoJson = response;
+      cb();
+    }
+  });
+};
+
+initWalk(initMap);

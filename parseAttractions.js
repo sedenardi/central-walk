@@ -204,3 +204,14 @@ var restrictToBounds = function(cb) {
   attractionsGeoJson.features = fArray;
   cb();
 };
+
+var loadAttractions = function(cb) {
+  $.ajax({
+    url: 'attractions.json',
+    dataType: 'json',
+    success: function(response) {
+      attractionsGeoJson = response;
+      cb();
+    }
+  });
+};

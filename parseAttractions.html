@@ -12,10 +12,10 @@
   <body>
     <div id="container">
     </div>
-    <script src="convert.js"></script>
+    <script src="parseAttractions.js"></script>
     <script>
-initJson(function() {
-  $('#container').html(JSON.stringify(geoJson));
+loadAttractions(function() {
+  $('#container').html(JSON.stringify(attractionsGeoJson));
 });
     </script>
   </body>
