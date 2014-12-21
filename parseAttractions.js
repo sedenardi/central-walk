@@ -111,6 +111,15 @@ var getAttractionCoords = function(node) {
   return [lon,lat];
 };
 
+var filterFeatures = [
+  'arches-and-bridges', 
+  'fountain-monument-sculpture', 
+  'landscapes-points-of-interest', 
+  'recreation', 
+  'playground', 
+  'refreshments', 
+  'gate'
+];
 var processAttractionXml = function(doc,cb) {
   var attractionNodes = doc.getElementsByTagName('attraction');
 
@@ -125,6 +134,10 @@ var processAttractionXml = function(doc,cb) {
       return w.firstChild.nodeValue;
     });
 
+    features = _.filter(features, function(v,i) {
+      return _.contains(filterFeatures,v);
+    });
+
     return {
       title: title,
       coordinates: coords,
@@ -135,7 +148,8 @@ var processAttractionXml = function(doc,cb) {
   });
 
   attractionsObj = _.filter(attractions, function(v,i) {
-    return v.coordinates[0] !== 0;
+    return v.coordinates[0] !== 0 &&
+      v.features.length > 0;
   });
 
   toAttractionGeoJson(cb);
@@ -170,14 +184,6 @@ var toAttractionGeoJson = function(cb) {
       }
     };
   }));
-
-  getDistinctFeatureTypes(cb);
-};
-
-var getDistinctFeatureTypes = function(cb) {
-  featureTypes = _.uniq(_.reduce(attractionsGeoJson.features, function(m,n) {
-    return m.concat(n.properties.features);
-  }, []));
   restrictToBounds(cb);
 };
 
@@ -211,6 +217,13 @@ var manualFilter = function(cb) {
   attractionsGeoJson.features = _.filter(attractionsGeoJson.features, function(v,i) {
     return !_.contains(excludeArray, v.properties.name);
   });
+  getDistinctFeatureTypes(cb);
+};
+
+var getDistinctFeatureTypes = function(cb) {
+  featureTypes = _.uniq(_.reduce(attractionsGeoJson.features, function(m,n) {
+    return m.concat(n.properties.features);
+  }, []));
   cb();
 };
 
