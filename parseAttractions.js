@@ -202,7 +202,10 @@ var excludeArray = [
   'Bicycle Rental', 
   'Loeb Boathouse Refreshments', 
   'Loeb Boathouse', 
-  'Trefoil Arch', 'Hans Christian Andersen'
+  'Trefoil Arch', 
+  'Hans Christian Andersen',
+  'Pilgrim Hill', 
+  'The Pilgrim'
 ];
 var manualFilter = function(cb) {
   attractionsGeoJson.features = _.filter(attractionsGeoJson.features, function(v,i) {
