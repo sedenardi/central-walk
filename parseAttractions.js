@@ -115,9 +115,9 @@ var processAttractionXml = function(doc,cb) {
   var attractionNodes = doc.getElementsByTagName('attraction');
 
   var attractions = _.map(attractionNodes, function(v,i) {
-    var title = v.getElementsByTagName('title')[0].firstChild.nodeValue;
+    var title = v.getElementsByTagName('title')[0].firstChild.nodeValue.trim();
     var coords = getAttractionCoords(v);
-    var description = v.getElementsByTagName('description')[0].firstChild.nodeValue;
+    var description = v.getElementsByTagName('description')[0].firstChild.nodeValue.trim();
     var link = v.getElementsByTagName('link')[0].firstChild.nodeValue;
     var featureNodes = v.getElementsByTagName('feature');
 
@@ -178,12 +178,7 @@ var getDistinctFeatureTypes = function(cb) {
   featureTypes = _.uniq(_.reduce(attractionsGeoJson.features, function(m,n) {
     return m.concat(n.properties.features);
   }, []));
-
-  if (typeof geoJson !== 'undefined') {
-    restrictToBounds(cb);
-  } else {
-    cb();
-  }
+  restrictToBounds(cb);
 };
 
 var isInBounds = function(coord) {
@@ -197,7 +192,22 @@ var restrictToBounds = function(cb) {
   attractionsGeoJson.features = _.filter(attractionsGeoJson.features, function(v,i) {
     return isInBounds(v.geometry.coordinates);
   });
+  manualFilter(cb);
+};
 
+var excludeArray = [
+  'Gill Rustic Bridge', 
+  'Bow Bridge', 
+  'The Lake', 
+  'Bicycle Rental', 
+  'Loeb Boathouse Refreshments', 
+  'Loeb Boathouse', 
+  'Trefoil Arch', 'Hans Christian Andersen'
+];
+var manualFilter = function(cb) {
+  attractionsGeoJson.features = _.filter(attractionsGeoJson.features, function(v,i) {
+    return !_.contains(excludeArray, v.properties.name);
+  });
   cb();
 };
 

@@ -10,12 +10,12 @@
     <script src="geojson-js-utils/geojson-utils.js"></script>
   </head>
   <body>
-    <div id="container">
-    </div>
+    <pre id="container">
+    </pre>
     <script src="parseAttractions.js"></script>
     <script>
 loadAttractions(function() {
-  $('#container').html(JSON.stringify(attractionsGeoJson));
+  $('#container').html(JSON.stringify(attractionsGeoJson,null,2));
 });
     </script>
   </body>

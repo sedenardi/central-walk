@@ -275,7 +275,7 @@ var mapTick = function() {
           layer.setStyle(coloring.getStyle(feature));
           $('#pathTooltip').hide();
         }
-      })
+      });
     }
   }).addTo(map);
 
@@ -312,8 +312,19 @@ var syncControlState = function() {
   }
 };
 
+excludeArray = [];
 var showAttractions = function() {
-  attractionLayer = L.geoJson(attractions).addTo(map);
+  attractionLayer = L.geoJson(attractions, {
+    style: coloring.getStyle,
+    onEachFeature: function(feature,layer) {
+      layer.on({
+        click: function(e) {
+          excludeArray.push(feature.properties.name);
+          console.log(feature.properties.name);
+        }
+      });
+    }
+  }).addTo(map);
 };
 
 var initControls = function() {
