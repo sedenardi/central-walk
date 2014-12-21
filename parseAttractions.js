@@ -113,74 +113,72 @@ var getAttractionCoords = function(node) {
 
 var processAttractionXml = function(doc,cb) {
   var attractionNodes = doc.getElementsByTagName('attraction');
-  var attractions = [];
-  for (var i = 0; i < attractionNodes.length; i++) {
-    var title = attractionNodes[i].getElementsByTagName('title')[0].firstChild.nodeValue;
-    var coords = getAttractionCoords(attractionNodes[i]);
-    var description = attractionNodes[i].getElementsByTagName('description')[0].firstChild.nodeValue;
-    var link = attractionNodes[i].getElementsByTagName('link')[0].firstChild.nodeValue;
-    var featureNodes = attractionNodes[i].getElementsByTagName('feature');
-    var features = [];
-    for (var j = 0; j < featureNodes.length; j++) {
-      features.push(featureNodes[j].firstChild.nodeValue);
-    }
-    if (coords[0] !== 0) {
-      attractionsObj.push({
-        title: title,
-        coordinates: coords,
-        description: description,
-        link: link,
-        features: features
-      });
-    }
-  }
+
+  var attractions = _.map(attractionNodes, function(v,i) {
+    var title = v.getElementsByTagName('title')[0].firstChild.nodeValue;
+    var coords = getAttractionCoords(v);
+    var description = v.getElementsByTagName('description')[0].firstChild.nodeValue;
+    var link = v.getElementsByTagName('link')[0].firstChild.nodeValue;
+    var featureNodes = v.getElementsByTagName('feature');
+
+    var features = _.map(featureNodes, function(w,j) {
+      return w.firstChild.nodeValue;
+    });
+
+    return {
+      title: title,
+      coordinates: coords,
+      description: description,
+      link: link,
+      features: features
+    };
+  });
+
+  attractionsObj = _.filter(attractions, function(v,i) {
+    return v.coordinates[0] !== 0;
+  });
+
   toAttractionGeoJson(cb);
 };
 
 var toAttractionGeoJson = function(cb) {
-  for (var i = 0; i < attractionsObj.length; i++) {
-    attractionsGeoJson.features.push({
+  attractionsGeoJson.features = _.map(attractionsObj, function(v,i) {
+    return {
       type: 'Feature',
       geometry: {
         type: 'Point',
-        coordinates: attractionsObj[i].coordinates
+        coordinates: v.coordinates
       },
       properties: {
-        name: attractionsObj[i].title,
-        description: attractionsObj[i].description,
-        link: attractionsObj[i].link,
-        features: attractionsObj[i].features
+        name: v.title,
+        description: v.description,
+        link: v.link,
+        features: v.features
       }
-    });
-  }
-  for (var j = 0; j < gates.length; j++) {
-    attractionsGeoJson.features.push({
+    };
+  }).concat(_.map(gates, function(v,i) {
+    return {
       type: 'Feature',
       geometry: {
         type: 'Point',
-        coordinates: gates[j].coordinates
+        coordinates: v.coordinates
       },
       properties: {
-        name: gates[j].name,
-        description: gates[j].description,
+        name: v.name,
+        description: v.description,
         features: ['gate']
       }
-    });
-  }
+    };
+  }));
+
   getDistinctFeatureTypes(cb);
 };
 
 var getDistinctFeatureTypes = function(cb) {
-  for (var i = 0; i < attractionsGeoJson.features.length; i++) {
-    var types = attractionsGeoJson.features[i].properties.features;
-    for (var j = 0; j < types.length; j++) {
-      var exists = false;
-      for (var k = 0; k < featureTypes.length; k++) {
-        exists = exists || (featureTypes[k] === types[j]);
-      }
-      if (!exists) featureTypes.push(types[j]);
-    }
-  }
+  featureTypes = _.uniq(_.reduce(attractionsGeoJson.features, function(m,n) {
+    return m.concat(n.properties.features);
+  }, []));
+
   if (typeof geoJson !== 'undefined') {
     restrictToBounds(cb);
   } else {
@@ -196,22 +194,20 @@ var isInBounds = function(coord) {
 };
 
 var restrictToBounds = function(cb) {
-  var fArray = [];
-  for (var i = 0; i < attractionsGeoJson.features.length; i++) {
-    if (isInBounds(attractionsGeoJson.features[i].geometry.coordinates))
-      fArray.push(attractionsGeoJson.features[i]);
-  }
-  attractionsGeoJson.features = fArray;
+  attractionsGeoJson.features = _.filter(attractionsGeoJson.features, function(v,i) {
+    return isInBounds(v.geometry.coordinates);
+  });
+
   cb();
 };
 
 var loadAttractions = function(cb) {
   $.ajax({
-    url: 'attractions.json',
+    url: 'coordinates.json',
     dataType: 'json',
-    success: function(response) {
-      attractionsGeoJson = response;
-      cb();
+    success: function(geoRes) {
+      geoJson = geoRes;
+      parseAttractionXml(cb);
     }
   });
 };
