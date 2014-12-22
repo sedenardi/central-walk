@@ -224,6 +224,36 @@ var getDistinctFeatureTypes = function(cb) {
   featureTypes = _.uniq(_.reduce(attractionsGeoJson.features, function(m,n) {
     return m.concat(n.properties.features);
   }, []));
+  mapFeatures(cb);
+};
+
+var featureMap = {
+  'arches-and-bridges': function() { return 'bridge'; },
+  'fountain-monument-sculpture': function(feature) {
+    if (feature.properties.name.toLowerCase().indexOf('fountain') !== -1)
+      return 'fountain';
+    return 'monument';
+  },
+  'landscapes-points-of-interest': function(feature) { 
+    if (feature.properties.name.toLowerCase().indexOf('bethesda') !== -1)
+      return 'fountain';
+    if (feature.properties.name.toLowerCase().indexOf('zoo') !== -1)
+      return 'zoo';
+    if (feature.properties.name.toLowerCase().indexOf('dairy') !== -1 ||
+      feature.properties.name.toLowerCase().indexOf('cop cot') !== -1)
+      return 'pavilion';
+    return 'landscape'; 
+  },
+  'refreshments': function() { return 'restaurant'; },
+  'recreation': function() { return 'recreation'; },
+  'playground': function() { return 'playground'; },
+  'gate': function() { return 'gate'; },
+};
+var mapFeatures = function(cb) {
+  _.each(attractionsGeoJson.features, function(v,i) {
+    v.properties.type = featureMap[v.properties.features[0]](v);
+    delete v.properties.features;
+  });
   cb();
 };
 
