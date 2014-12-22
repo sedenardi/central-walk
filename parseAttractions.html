@@ -12,10 +12,12 @@
   <body>
     <pre id="container">
     </pre>
+    <textarea id="area"></textarea>
     <script src="parseAttractions.js"></script>
     <script>
 loadAttractions(function() {
   $('#container').html(JSON.stringify(attractionsGeoJson,null,2));
+  $('#area').val(JSON.stringify(attractionsGeoJson));
 });
     </script>
   </body>

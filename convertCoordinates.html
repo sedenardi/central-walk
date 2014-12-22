@@ -10,12 +10,14 @@
     <script src="geojson-js-utils/geojson-utils.js"></script>
   </head>
   <body>
-    <div id="container">
-    </div>
+    <pre id="container">
+    </pre>
+    <textarea id="area"></textarea>
     <script src="convertCoordinates.js"></script>
     <script>
 initJson(function() {
-  $('#container').html(JSON.stringify(geoJson));
+  $('#container').html(JSON.stringify(geoJson,null,2));
+  $('#area').html(JSON.stringify(geoJson));
 });
     </script>
   </body>
