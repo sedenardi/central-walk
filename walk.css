@@ -38,6 +38,7 @@ body {
 
 .navPad {
   padding: 0 15px;
+  height: 50px;
 }
 
 .navLabel {
@@ -47,6 +48,16 @@ body {
 
 .navCheckbox {
   vertical-align: text-top;
+}
+
+.nav .nav-divider {
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+.navbar-nav {
+    margin: 0 -15px;
+  }
 }
 
 .navbar .divider-vertical {

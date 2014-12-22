@@ -312,7 +312,6 @@ var syncControlState = function() {
   }
 };
 
-excludeArray = [];
 var showAttractions = function() {
   attractionLayer = L.geoJson(attractions, {
     pointToLayer: function(feature, latlng) {
@@ -326,7 +325,6 @@ var showAttractions = function() {
     onEachFeature: function(feature,layer) {
       layer.on({
         click: function(e) {
-          excludeArray.push(feature.properties.name);
           console.log(feature.properties.name);
         }
       });
