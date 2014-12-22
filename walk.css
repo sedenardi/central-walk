@@ -70,3 +70,39 @@ body {
 #attrToggle {
   cursor: pointer;
 }
+
+.icon-custom {
+  background-size: 16px 16px;
+}
+
+/*icons*/
+.icon-bridge {
+  background-image: url("icons/icon-bridge.png");
+}
+.icon-gate {
+  background-image: url("icons/icon-gate.png");
+}
+.icon-monument{
+  background-image: url("icons/icon-monument.png");
+}
+.icon-playground {
+  background-image: url("icons/icon-playground.png");
+}
+.icon-restaurant {
+  background-image: url("icons/icon-restaurant.png");
+}
+.icon-fountain {
+  background-image: url("icons/icon-fountain.png");
+}
+.icon-landscape {
+  background-image: url("icons/icon-landscape.png");
+}
+.icon-pavilion {
+  background-image: url("icons/icon-pavilion.png");
+}
+.icon-recreation {
+  background-image: url("icons/icon-recreation.png");
+}
+.icon-zoo {
+  background-image: url("icons/icon-zoo.png");
+}

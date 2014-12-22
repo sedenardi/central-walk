@@ -315,7 +315,14 @@ var syncControlState = function() {
 excludeArray = [];
 var showAttractions = function() {
   attractionLayer = L.geoJson(attractions, {
-    style: coloring.getStyle,
+    pointToLayer: function(feature, latlng) {
+      var c = 'icon-custom icon-' + feature.properties.type;
+      var icon = L.divIcon({ 
+        className: c,
+        iconSize: L.point(16, 16)
+      });
+      return L.marker(latlng, {icon: icon});
+    },
     onEachFeature: function(feature,layer) {
       layer.on({
         click: function(e) {
