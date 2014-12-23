@@ -323,11 +323,8 @@ var showAttractions = function() {
       return L.marker(latlng, {icon: icon});
     },
     onEachFeature: function(feature,layer) {
-      layer.on({
-        click: function(e) {
-          console.log(feature.properties.name);
-        }
-      });
+      var popupContent = '<div class="popupTitle">' + feature.properties.name + '</div>';
+      layer.bindPopup(popupContent);
     }
   }).addTo(map);
 };
