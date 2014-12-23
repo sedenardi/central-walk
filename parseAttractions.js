@@ -180,6 +180,7 @@ var toAttractionGeoJson = function(cb) {
       properties: {
         name: v.name,
         description: v.description,
+        link: 'http://www.nytimes.com/1999/12/03/nyregion/central-park-entrances-in-a-return-to-the-past.html',
         features: ['gate']
       }
     };
