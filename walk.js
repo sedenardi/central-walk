@@ -36,7 +36,7 @@ var colorings = {
       var color = feature.properties.start === 'north' ? 'rgb(255, 51, 0)' : 'rgb(0, 51, 255)';
       return {
         color: color,
-        opacity: 0.3
+        opacity: 0.5
       };
     }
   },
@@ -47,7 +47,7 @@ var colorings = {
       var color = palette.indigo[colorNum];
       return {
         color: color,
-        opacity: 0.3
+        opacity: 0.6
       };
     }
   },
@@ -58,7 +58,7 @@ var colorings = {
       var color = palette.red[colorNum];
       return {
         color: color,
-        opacity: 0.3
+        opacity: 0.6
       };
     }
   },
@@ -69,7 +69,7 @@ var colorings = {
       var color = palette.purple[colorNum];
       return {
         color: color,
-        opacity: 0.3
+        opacity: 0.6
       };
     }
   },
@@ -181,7 +181,7 @@ var initScales = function() {
       d3.max(geoJson.lineStrings, function(d) {
         return d.features[0].properties.distance;
     })])
-    .rangeRound([300, 900]);
+    .rangeRound([100, 900]);
 
   durationScale = d3.scale.linear()
     .domain([
@@ -191,7 +191,7 @@ var initScales = function() {
       d3.max(geoJson.lineStrings, function(d) {
         return d.features[0].properties.maxTick;
     })])
-    .rangeRound([300, 900]);
+    .rangeRound([100, 900]);
 
   paceScale = d3.scale.linear()
     .domain([
@@ -201,7 +201,7 @@ var initScales = function() {
       d3.max(geoJson.lineStrings, function(d) {
         return d.features[0].properties.pace;
     })])
-    .rangeRound([300, 900]);
+    .rangeRound([100, 900]);
 
   startScale = d3.scale.linear()
     .domain([
@@ -245,6 +245,7 @@ var mapTick = function() {
       layer.on({
         mouseover: function(e) {
           layer.setStyle({
+            color: palette.grey[900],
             opacity: 1
           });
           if (!L.Browser.ie && !L.Browser.opera) {
@@ -264,7 +265,7 @@ var mapTick = function() {
 
           var x = e.originalEvent.x + 5,
               y = e.originalEvent.y - 30;
-          if (x + 235 > $(window).width()) x = x - 235;
+          if (x + 245 > $(window).width()) x = x - 245;
           if (y + 95 > $(window).height()) y = $(window).height() - 95;
           $('#pathTooltip').css('left', x);
           $('#pathTooltip').css('top', y);
