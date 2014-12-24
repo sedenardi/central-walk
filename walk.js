@@ -353,6 +353,11 @@ var showAttractions = function() {
 };
 
 var initControls = function() {
+  $('#brandLink').click(function(e) {
+    $('#aboutModal').modal('show');
+    e.preventDefault();
+  });
+
   $('.playbackControl').click(function(e) {
     var control = $(this).attr('data-control');
     if (control === 'toggle') {

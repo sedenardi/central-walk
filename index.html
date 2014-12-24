@@ -1,7 +1,7 @@
 <html>
   <head>
     <meta charset='utf-8'>
-    <title>A Walk in the Park</title>
+    <title>Central Walk</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
@@ -29,7 +29,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">A Walk in the Park</a>
+          <a id="brandLink" class="navbar-brand" href=''>Central Walk</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -80,6 +80,41 @@
       <p>Distance: <span id="distance"></span></p>
       <p>Duration: <span id="duration"></span></p>
       <p>Pace: <span id="pace"></span></p>
+    </div>
+
+    <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div>
+              <h4>About</h4>
+              Durring the summer of 2014, I took advantage of NYC's summer weather and walked to and from work through the iconic Central Park. Using my Android phone I recorded over 40 of the paths I took. I tried to take different paths each time so I could explore the park more completely, though there are a few overlapping paths.
+            </div>
+            <br>
+            <div>
+              <ul>
+                <li>Use the controls to toggle the playback and adjust speed.</li>
+                <li>Choose which matric with which to shade each path.</li>
+                <li>Hover over each path to see detailed stats.</li>
+                <li>Click on the icons to see details about that attraction.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Credits</h4>
+              <ul>
+                <li><a href="https://play.google.com/store/apps/details?id=com.fitnesskeeper.runkeeper.pro" target="_blank">RunKeeper</a> - GPS recording</li>
+                <li><a href="http://leafletjs.com/" target="_blank">Leaflet</a> - Mapping engine</li>
+                <li><a href="https://www.mapbox.com/" target="_blank">Mapbox</a> - Map tile provider</li>
+                <li><a href="http://icons8.com/" target="_blank">Icons8</a> - Attraction icons</li>
+              </ul>
+            </div>
+            <br>
+            <div style="text-align:center;">
+              <h4><a href="http://www.sandersdenardi.com/" target="_blank">Sanders DeNardi</a> / <a href="https://twitter.com/srednass" target="_blank">@srednass</a> / <a href="https://github.com/sedenardi/central-walk" target="_blank">GitHub</a></h4>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="walk.js"></script>
