@@ -138,6 +138,14 @@ var processAttractionXml = function(doc,cb) {
       return _.contains(filterFeatures,v);
     });
 
+    // manual coord fix
+    if (title === 'Cherry Hill')
+      coords = [-73.97207915782928,40.77482185003984];
+    if (title === 'The Mall and Literary Walk')
+      coords = [-73.97179618477821,40.77178210625987];
+    if (title === 'Olmsted Flower Bed')
+      coords = [-73.97248148918152,40.76996509978494];
+
     return {
       title: title,
       coordinates: coords,
@@ -149,7 +157,9 @@ var processAttractionXml = function(doc,cb) {
 
   attractionsObj = _.filter(attractions, function(v,i) {
     return v.coordinates[0] !== 0 &&
-      v.features.length > 0;
+      v.features.length > 0 &&
+      v.title !== 'The Point' &&
+      v.title !== 'Volleyball Courts';
   });
 
   toAttractionGeoJson(cb);
