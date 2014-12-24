@@ -132,7 +132,7 @@ var initMap = function() {
   initControls();
   resetMap();
   showAttractions();
-};
+};1
 
 var getPathsAtTick = function(tick) {
   var paths = [];
@@ -305,7 +305,7 @@ var mapTick = function() {
 var resetMap = function() {
   playing = false;
   paused = false;
-  currentTick = geoJson.mapTick;
+  currentTick = geoJson.maxTick;
   mapTick();
   syncControlState();
 };
