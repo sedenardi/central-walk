@@ -353,7 +353,7 @@ var showAttractions = function() {
 };
 
 var initControls = function() {
-  $('#brandLink').click(function(e) {
+  $('.aboutModal').click(function(e) {
     $('#aboutModal').modal('show');
     e.preventDefault();
   });
