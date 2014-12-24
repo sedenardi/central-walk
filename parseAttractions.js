@@ -145,6 +145,10 @@ var processAttractionXml = function(doc,cb) {
       coords = [-73.97179618477821,40.77178210625987];
     if (title === 'Olmsted Flower Bed')
       coords = [-73.97248148918152,40.76996509978494];
+    if (title === 'Wollman Rink') {
+      coords = [-73.97457361221313,40.76764730337122];
+      features = ['recreation'];
+    }
 
     return {
       title: title,
