@@ -117,3 +117,251 @@ body {
 .icon-zoo {
   background-image: url("icons/icon-zoo.png");
 }
+
+.leaflet-popup-content-wrapper {
+  background-color: #000000;
+  border-radius: 0;
+  margin: 0;
+}
+
+.leaflet-popup-content {
+  width: 286px !important;
+  height: 200px !important;
+  margin: 0;
+}
+
+.popup-content {
+  background: rgba(0,0,0,.5);
+  width: 100%;
+  height: 100%;
+  padding: 5px;
+}
+
+.popup-title {
+  color: #FFFFFF;
+}
+
+.popup-description {
+  color: #FFFFFF;
+}
+
+.popup-background {
+  width: 286px;
+  height: 200px;
+  background-size: cover;
+}
+
+/*attractions*/
+.inscope-arch {
+  background-image: url("images/inscope-arch.jpg");
+}
+.dancing-goat {
+  background-image: url("images/dancing-goat.jpg");
+}
+.dancing-crane-cafe {
+  background-image: url("images/dancing-crane-cafe.jpg");
+}
+.jose-julian-marti {
+  background-image: url("images/jose-julian-marti.jpg");
+}
+.jose-de-san-martin {
+  background-image: url("images/jose-de-san-martin.jpg");
+}
+.hallett-nature-sanctuary {
+  background-image: url("images/hallett-nature-sanctuary.jpg");
+}
+.gapstow-bridge {
+  background-image: url("images/gapstow-bridge.jpg");
+}
+.thomas-moore {
+  background-image: url("images/thomas-moore.jpg");
+}
+.the-pond {
+  background-image: url("images/the-pond.jpg");
+}
+.simon-bolivar {
+  background-image: url("images/simon-bolivar.jpg");
+}
+.artists-gate {
+  background-image: url("images/artists-gate.jpg");
+}
+.wien-walk {
+  background-image: url("images/wien-walk.jpg");
+}
+.scholars-gate {
+  background-image: url("images/scholars-gate.jpg");
+}
+.lombard-lamp {
+  background-image: url("images/lombard-lamp.jpg");
+}
+.doris-c-freedman-plaza {
+  background-image: url("images/doris-c-freedman-plaza.jpg");
+}
+.victorian-gardens-amusement-park {
+  background-image: url("images/victorian-gardens-amusement-park.jpg");
+}
+.denesmouth-arch {
+  background-image: url("images/denesmouth-arch.jpg");
+}
+.delacorte-clock {
+  background-image: url("images/delacorte-clock.jpg");
+}
+.central-park-zoo {
+  background-image: url("images/central-park-zoo.jpg");
+}
+.wollman-rink {
+  background-image: url("images/wollman-rink.jpg");
+}
+.green-gap-arch {
+  background-image: url("images/green-gap-arch.jpg");
+}
+.dipway-arch {
+  background-image: url("images/dipway-arch.jpg");
+}
+.cop-cot {
+  background-image: url("images/cop-cot.jpg");
+}
+.lehman-gates {
+  background-image: url("images/lehman-gates.jpg");
+}
+.carousel {
+  background-image: url("images/carousel.jpg");
+}
+.playmates-arch {
+  background-image: url("images/playmates-arch.jpg");
+}
+.driprock-arch {
+  background-image: url("images/driprock-arch.jpg");
+}
+.dairy-visitor-center-and-gift-shop {
+  background-image: url("images/dairy-visitor-center-and-gift-shop.jpg");
+}
+.chess-and-checkers-house {
+  background-image: url("images/chess-and-checkers-house.jpg");
+}
+.umpire-rock {
+  background-image: url("images/umpire-rock.jpg");
+}
+.heckscher-playground {
+  background-image: url("images/heckscher-playground.jpg");
+}
+.heckscher-ballfields {
+  background-image: url("images/heckscher-ballfields.jpg");
+}
+.balto {
+  background-image: url("images/balto.jpg");
+}
+.volleyball {
+  background-image: url("images/volleyball.jpg");
+}
+.fitz-greene-halleck {
+  background-image: url("images/fitz-greene-halleck.jpg");
+}
+.dalehead-arch {
+  background-image: url("images/dalehead-arch.jpg");
+}
+.ballplayers-house-refreshments {
+  background-image: url("images/ballplayers-house-refreshments.jpg");
+}
+.william-shakespeare {
+  background-image: url("images/william-shakespeare.jpg");
+}
+.the-mall-and-literary-walk {
+  background-image: url("images/the-mall-and-literary-walk.jpg");
+}
+.olmsted-flower-bed {
+  background-image: url("images/olmsted-flower-bed.jpg");
+}
+.christopher-columbus {
+  background-image: url("images/christopher-columbus.jpg");
+}
+.th-united-sttes-infantry {
+  background-image: url("images/th-united-sttes-infantry.jpg");
+}
+.robert-burns {
+  background-image: url("images/robert-burns.jpg");
+}
+.dene {
+  background-image: url("images/dene.jpg");
+}
+.billy-johnson-playground {
+  background-image: url("images/billy-johnson-playground.jpg");
+}
+.rumsey-playfield {
+  background-image: url("images/rumsey-playfield.jpg");
+}
+.east-nd-street-playground {
+  background-image: url("images/east-nd-street-playground.jpg");
+}
+.east-green {
+  background-image: url("images/east-green.jpg");
+}
+.indian-hunter {
+  background-image: url("images/indian-hunter.jpg");
+}
+.nell-singer-lilac-walk {
+  background-image: url("images/nell-singer-lilac-walk.jpg");
+}
+.mother-goose {
+  background-image: url("images/mother-goose.jpg");
+}
+.naumburg-bandshell {
+  background-image: url("images/naumburg-bandshell.jpg");
+}
+.richard-morris-hunt {
+  background-image: url("images/richard-morris-hunt.jpg");
+}
+.sheep-meadow {
+  background-image: url("images/sheep-meadow.jpg");
+}
+.victor-herbert {
+  background-image: url("images/victor-herbert.jpg");
+}
+.eagles-and-prey {
+  background-image: url("images/eagles-and-prey.jpg");
+}
+.lawn-bowling-and-croquet {
+  background-image: url("images/lawn-bowling-and-croquet.jpg");
+}
+.minton-tile-ceiling-at-bethesda-terrace {
+  background-image: url("images/minton-tile-ceiling-at-bethesda-terrace.jpg");
+}
+.cherry-hill-fountain {
+  background-image: url("images/cherry-hill-fountain.jpg");
+}
+.cherry-hill {
+  background-image: url("images/cherry-hill.jpg");
+}
+.the-falconer {
+  background-image: url("images/the-falconer.jpg");
+}
+.johann-cf-von-schiller {
+  background-image: url("images/johann-cf-von-schiller.jpg");
+}
+.adventure-playground {
+  background-image: url("images/adventure-playground.jpg");
+}
+.th-regiment-memorial {
+  background-image: url("images/th-regiment-memorial.jpg");
+}
+.riftstone-arch {
+  background-image: url("images/riftstone-arch.jpg");
+}
+.strawberry-fields {
+  background-image: url("images/strawberry-fields.jpg");
+}
+.daniel-webster {
+  background-image: url("images/daniel-webster.jpg");
+}
+.womens-gate {
+  background-image: url("images/womens-gate.jpg");
+}
+.william-tecumseh-sherman {
+  background-image: url("images/william-tecumseh-sherman.jpg");
+}
+.willowdell-arch {
+  background-image: url("images/willowdell-arch.jpg");
+}
+.bethesda-terrace {
+  background-image: url("images/bethesda-terrace.jpg");
+}

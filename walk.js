@@ -1,5 +1,5 @@
 var map, currentLayer, attractionLayer;
-var interval = 10;
+var interval = 25;
 var speeds = {
   realTime: {
     speed: 0.01,
@@ -234,7 +234,9 @@ var initScales = function() {
 
 var currentTick = 0,
     playing = false,
-    paused = false;
+    paused = false,
+    startTime,
+    endTime;
 var mapTick = function() {
   playing = true;
   var lines = getPathsAtTick(currentTick);
@@ -292,6 +294,10 @@ var mapTick = function() {
     },interval);
   } else {
     playing = false;
+    if (startTime) {
+      endTime = new Date();
+      console.log('Duration - ' + (endTime - startTime));
+    }    
     syncControlState();
   }
 };
@@ -324,8 +330,24 @@ var showAttractions = function() {
       return L.marker(latlng, {icon: icon});
     },
     onEachFeature: function(feature,layer) {
-      var popupContent = '<div class="popupTitle">' + feature.properties.name + '</div>';
-      layer.bindPopup(popupContent);
+      var title = '<a href="' + feature.properties.link + '" target="_blank">' +
+        feature.properties.name + '</a>';
+      var popupTitle = '<div class="popup-title">' +
+        title + '</div>';
+      var popupDescription = '<div class="popup-description">' +
+        feature.properties.description + '</div>';
+      var popupContent = '<div class="popup-content">' +
+        popupTitle + popupDescription + '</div>';
+      var popupClass = feature.properties.name
+        .toLowerCase()
+        .replace(/ /g, '-')
+        .replace(/'/g, '')
+        .replace(/\./g, '')
+        .replace(/[0-9]/g, '')
+        .replace(/&/g, 'and');
+      var popupContainer = '<div class="popup-background ' + popupClass + '">' +
+        popupContent + '</div>';
+      layer.bindPopup(popupContainer);
     }
   }).addTo(map);
 };
@@ -339,6 +361,7 @@ var initControls = function() {
         if (playing) {
           paused = true;
         } else {
+          startTime = new Date();
           currentTick = 0;
           mapTick();
         }
