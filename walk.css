@@ -131,18 +131,28 @@ body {
 }
 
 .popup-content {
-  background: rgba(0,0,0,.5);
+  background: rgba(0,0,0,.65);
   width: 100%;
   height: 100%;
-  padding: 5px;
+  padding: 10px 7px 7px;
+  font-family: 'Open Sans', sans-serif;
 }
 
 .popup-title {
+  text-align: center;
+  font-size: 14px;
+}
+.popup-title a {
   color: #FFFFFF;
+}
+.popup-title a i {
+  font-size: 12px;
 }
 
 .popup-description {
+  margin-top: 8px;
   color: #FFFFFF;
+  text-align: center;
 }
 
 .popup-background {
@@ -275,8 +285,8 @@ body {
 .christopher-columbus {
   background-image: url("images/christopher-columbus.jpg");
 }
-.th-united-sttes-infantry {
-  background-image: url("images/th-united-sttes-infantry.jpg");
+.th-united-states-infantry {
+  background-image: url("images/th-united-states-infantry.jpg");
 }
 .robert-burns {
   background-image: url("images/robert-burns.jpg");

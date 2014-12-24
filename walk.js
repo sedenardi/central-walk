@@ -331,7 +331,7 @@ var showAttractions = function() {
     },
     onEachFeature: function(feature,layer) {
       var title = '<a href="' + feature.properties.link + '" target="_blank">' +
-        feature.properties.name + '</a>';
+        feature.properties.name + ' <i class="fa fa-external-link"></i></a>';
       var popupTitle = '<div class="popup-title">' +
         title + '</div>';
       var popupDescription = '<div class="popup-description">' +
