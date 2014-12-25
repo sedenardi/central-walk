@@ -122,7 +122,9 @@ var initMap = function() {
 		lon = (first[0] + last[0])/2,
 		lat = (first[1] + last[1])/2;
 
-	map = L.map('map').setView([lat, lon], 16);
+  var zoom = $('#map').height() < 680 ? 15 : 16;
+
+	map = L.map('map').setView([lat, lon], zoom);
   L.tileLayer(tile.url, {
     maxZoom: 20,
     attribution: tile.attribution
