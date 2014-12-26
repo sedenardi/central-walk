@@ -1,4 +1,8 @@
-var map, currentLayer, attractionLayer;
+var map,
+    currentLayer,
+    lastClickedPath,
+    lastClickedAttraction,
+    attractionLayer;
 var interval = 25;
 var speeds = {
   realTime: {
@@ -125,6 +129,9 @@ var initMap = function() {
   var zoom = $('#map').height() < 680 ? 15 : 16;
 
 	map = L.map('map').setView([lat, lon], zoom);
+  map.on('click', function(e) {
+    hideTooltip();
+  });
   L.tileLayer(tile.url, {
     maxZoom: 20,
     attribution: tile.attribution
@@ -234,6 +241,35 @@ var initScales = function() {
     .rangeRound([300, 900]);
 };
 
+var showTooltip = function(feature, layer, e) {
+  $('#start').html(moment(feature.properties.time).format('ddd MMM D h:mm A'));
+  var minutes = Math.floor(feature.properties.maxTick/60);
+  var seconds = feature.properties.maxTick % 60;
+  var duration = minutes + ' minutes ' + seconds + ' seconds';
+  var pMin = Math.floor(feature.properties.pace/60);
+  var pSec = feature.properties.pace % 60;
+  var pace = pMin + ' minutes ' + (pSec !== 0 ? (pSec + ' seconds') : '');
+
+  $('#duration').html(duration);
+  $('#distance').html(feature.properties.distance + ' mi');
+  $('#pace').html(pace);
+
+  var x = e.originalEvent.x + 5,
+      y = e.originalEvent.y - 30;
+  if (x + 245 > $(window).width()) x = x - 245;
+  if (y + 95 > $(window).height()) y = $(window).height() - 95;
+  $('#pathTooltip').css('left', x);
+  $('#pathTooltip').css('top', y);
+  $('#pathTooltip').show();
+};
+
+var hideTooltip = function() {
+  $('#pathTooltip').removeClass('clicked');
+  $('#pathTooltip').hide();
+  if (lastClickedPath)
+    currentLayer.resetStyle(lastClickedPath);
+};
+
 var currentTick = 0,
     playing = false,
     paused = false,
@@ -247,7 +283,12 @@ var mapTick = function() {
     style: coloring.getStyle,
     onEachFeature: function(feature,layer) {
       layer.on({
-        mouseover: function(e) {
+        click: function(e) {
+          if (lastClickedPath)
+            currentLayer.resetStyle(lastClickedPath);
+          if (lastClickedAttraction)
+            lastClickedAttraction.closePopup();
+
           layer.setStyle({
             color: palette.grey[900],
             opacity: 1
@@ -255,29 +296,31 @@ var mapTick = function() {
           if (!L.Browser.ie && !L.Browser.opera) {
             layer.bringToFront();
           }
-          $('#start').html(moment(feature.properties.time).format('ddd MMM D h:mm A'));
-          var minutes = Math.floor(feature.properties.maxTick/60);
-          var seconds = feature.properties.maxTick % 60;
-          var duration = minutes + ' minutes ' + seconds + ' seconds';
-          var pMin = Math.floor(feature.properties.pace/60);
-          var pSec = feature.properties.pace % 60;
-          var pace = pMin + ' minutes ' + (pSec !== 0 ? (pSec + ' seconds') : '');
 
-          $('#duration').html(duration);
-          $('#distance').html(feature.properties.distance + ' mi');
-          $('#pace').html(pace);
+          showTooltip(feature, layer, e);
+          $('#pathTooltip').addClass('clicked');
 
-          var x = e.originalEvent.x + 5,
-              y = e.originalEvent.y - 30;
-          if (x + 245 > $(window).width()) x = x - 245;
-          if (y + 95 > $(window).height()) y = $(window).height() - 95;
-          $('#pathTooltip').css('left', x);
-          $('#pathTooltip').css('top', y);
-          $('#pathTooltip').show();
+          lastClickedPath = layer;
+        },
+        mouseover: function(e) {
+          if ($('#pathTooltip').hasClass('clicked')) {
+            return;
+          }
+          layer.setStyle({
+            color: palette.grey[900],
+            opacity: 1
+          });
+          if (!L.Browser.ie && !L.Browser.opera) {
+            layer.bringToFront();
+          }
 
+          showTooltip(feature, layer, e);
         },
         mouseout: function(e) {
-          layer.setStyle(coloring.getStyle(feature));
+          if ($('#pathTooltip').hasClass('clicked')) {
+            return;
+          }
+          currentLayer.resetStyle(layer);
           $('#pathTooltip').hide();
         }
       });
@@ -350,6 +393,10 @@ var showAttractions = function() {
       var popupContainer = '<div class="popup-background ' + popupClass + '">' +
         popupContent + '</div>';
       layer.bindPopup(popupContainer);
+      layer.on('click', function() {
+        lastClickedAttraction = layer;
+        hideTooltip();
+      });
     }
   }).addTo(map);
 };
