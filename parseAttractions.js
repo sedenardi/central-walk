@@ -269,6 +269,14 @@ var mapFeatures = function(cb) {
     v.properties.type = featureMap[v.properties.features[0]](v);
     delete v.properties.features;
   });
+  combineObjects(cb);
+};
+
+var combineObjects = function(cb) {
+  finalObj = {
+    coordinates: geoJson,
+    attractions: attractionsGeoJson
+  };
   cb();
 };
 

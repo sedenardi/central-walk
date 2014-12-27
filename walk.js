@@ -456,18 +456,12 @@ var initControls = function() {
 
 var initWalk = function(cb) {
   $.ajax({
-    url: 'coordinates.json',
+    url: 'data.json',
     dataType: 'json',
-    success: function(geoRes) {
-      geoJson = geoRes;
-      $.ajax({
-        url: 'attractions.json',
-        dataType: 'json',
-        success: function(attRes) {
-          attractions = attRes;
-          cb();
-        }
-      });
+    success: function(dataRes) {
+      geoJson = dataRes.coordinates;
+      attractions = dataRes.attractions;
+      cb();
     }
   });
 };
